@@ -30,7 +30,7 @@ namespace MTCG
 {
     abstract class Card
     {
-        public string name { get; set; } //protected insted of public?
+        public string name { get; set; } //protected instead of public?
         public int damage { get; set; }
         public ElementType elementType { get; set; }
 
@@ -53,9 +53,9 @@ namespace MTCG
             return name.GetHashCode();
         }
 
-        abstract public int effectiveDmg(Card card);
+        abstract public int EffectiveDmg(Card card);
 
-        public int elementalDmg(Card card)
+        public int ElementalDmg(Card card)
         {
             //when a card is effective the damage is multiplied by 2, if its not effective its divided by 2
             //Water is effective against Fire
@@ -94,7 +94,7 @@ namespace MTCG
     { 
         public Spell(string name, int damage, ElementType elementType) : base(name, damage, elementType) { }
 
-        override public int effectiveDmg(Card card)
+        override public int EffectiveDmg(Card card)
         {
             if(card is Monster)
             {
@@ -110,7 +110,7 @@ namespace MTCG
                     return Int32.MaxValue;
                 }
             }
-            return elementalDmg(card);
+            return ElementalDmg(card);
         }
     }
 
@@ -123,12 +123,12 @@ namespace MTCG
             this.monsterType = monsterType;
         }
 
-        override public int effectiveDmg(Card card)
+        override public int EffectiveDmg(Card card)
         {
             if (card is Spell)
             {
                 Spell s = card as Spell;
-                return elementalDmg(s);
+                return ElementalDmg(s);
             }
 
             else if (card is Monster)

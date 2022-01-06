@@ -25,19 +25,19 @@ namespace MTCG
             deckList.Add(card4);
         }
 
-        public int getSize()
+        public int GetSize()
         {
             return deckList.Count;
         }
-        public Card getRndCard()
+        public Card GetRndCard()
         {
             return deckList[rnd.Next(deckList.Count)];
         }
-        public void addCard(Card c)
+        public void AddCard(Card c)
         {
             deckList.Add(c);
         }
-        public void removeCard(Card c)
+        public void RemoveCard(Card c)
         {
             deckList.Remove(c);
         }
