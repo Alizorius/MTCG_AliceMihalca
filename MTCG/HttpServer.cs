@@ -64,7 +64,39 @@ namespace MTCG
                 {
                     var request = ReadRequest(stream);
 
-                    //unterscheiden zwischen GET,POST,PUT,DELETE?
+                    if (request.StartsWith("GET"))
+                    {
+                        //incomplete
+                    }
+                    else if (request.StartsWith("POST"))
+                    {
+                        if (request.Contains("/users"))
+                        {
+                            DBUser.CreateUser(request);
+                        }
+                        else if (request.Contains("/sessions"))
+                        {
+
+                        }
+                        else if (request.Contains("/packages"))
+                        {
+
+                        }
+                        else if (request.Contains("/transactions"))
+                        {
+
+                        }
+                    }
+                    else if (request.StartsWith("PUT"))
+                    {
+                        //incomplete
+                    }
+                    else if (request.StartsWith("DELETE"))
+                    {
+                        //incomplete
+                    }
+                    //else?
+
                     //parse curl script anfrage - zb. /users
 
                 }
