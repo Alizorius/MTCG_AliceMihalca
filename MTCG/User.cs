@@ -10,10 +10,16 @@ namespace MTCG
     {
         public string username { get; set; }
         public string password { get; set; }
+        public Role role { get; set; } //actually enum
         public int score { get; set; }
         public int playedGames { get; set; }
         public int coin { get; set; }
         public List<Card> stack { get; set; }
         public List<Card> deck { get; set; }
+    }
+    enum Role
+    {
+        User,
+        Admin
     }
 }

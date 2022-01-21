@@ -66,13 +66,36 @@ namespace MTCG
 
                     if (request.StartsWith("GET"))
                     {
-                        //incomplete
+                        if (request.Contains("/cards"))
+                        {
+
+                        }
+                        else if (request.Contains("/deck"))
+                        {
+
+                        }
+                        else if (request.Contains("/users"))
+                        {
+
+                        }
+                        else if (request.Contains("/stats"))
+                        {
+
+                        }
+                        else if (request.Contains("/score"))
+                        {
+
+                        }
+                        else if (request.Contains("/tradings"))
+                        {
+
+                        }
                     }
                     else if (request.StartsWith("POST"))
                     {
                         if (request.Contains("/users"))
                         {
-                            DBUser.CreateUser(request);
+                            DBUser.AddUser(request);
                         }
                         else if (request.Contains("/sessions"))
                         {
@@ -86,18 +109,30 @@ namespace MTCG
                         {
 
                         }
+                        else if (request.Contains("/tradings"))
+                        {
+
+                        }
                     }
                     else if (request.StartsWith("PUT"))
                     {
-                        //incomplete
+                        if (request.Contains("/deck"))
+                        {
+
+                        }
+                        else if (request.Contains("/users"))
+                        {
+
+                        }
                     }
                     else if (request.StartsWith("DELETE"))
                     {
-                        //incomplete
+                        if (request.Contains("/tradings"))
+                        {
+
+                        }
                     }
                     //else?
-
-                    //parse curl script anfrage - zb. /users
 
                 }
                 finally
