@@ -30,62 +30,68 @@ namespace MTCG
 {
     abstract class Card
     {
-        public string name { get; set; } //protected instead of public?
-        public int damage { get; set; }
-        public ElementType elementType { get; set; }
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public double Damage { get; set; }
+        public ElementType ElementType { get; set; }
+        public int? PackageId { get; set; }
+        public string? Username { get; set; }
+        public bool InDeck { get; set; }
 
-        public Card(string name, int damage, ElementType elementType)
+        //constructor for all member variables?
+
+        public Card(string name, double damage, ElementType elementType)
         {
-            this.name = name;
-            this.damage = damage;
-            this.elementType = elementType;
+            Name = name;
+            Damage = damage;
+            ElementType = elementType;
         }
 
         public override bool Equals(object obj)
         {
             var item = obj as Card;
             if (item == null) return false;
-            return name.Equals(item.name);
+            return Name.Equals(item.Name);
         }
 
         public override int GetHashCode()
         {
-            return name.GetHashCode();
+            return Name.GetHashCode();
         }
 
-        abstract public int EffectiveDmg(Card card);
+        abstract public double EffectiveDmg(Card card);
 
-        public int ElementalDmg(Card card)
+        public double ElementalDmg(Card card)
         {
             //when a card is effective the damage is multiplied by 2, if its not effective its divided by 2
             //Water is effective against Fire
-            if (elementType.Equals(ElementType.Water) && card.elementType.Equals(ElementType.Fire))
+            if (ElementType.Equals(ElementType.Water) && card.ElementType.Equals(ElementType.Fire))
             {
-                return damage * 2;
+                return Damage * 2;
             }
-            else if (elementType.Equals(ElementType.Fire) && card.elementType.Equals(ElementType.Water))
+            else if (ElementType.Equals(ElementType.Fire) && card.ElementType.Equals(ElementType.Water))
             {
-                return damage / 2;
+                return Damage / 2;
             }
             //Fire is effective against Normal
-            else if (elementType.Equals(ElementType.Fire) && card.elementType.Equals(ElementType.Normal))
+            else if (ElementType.Equals(ElementType.Fire) && card.ElementType.Equals(ElementType.Normal))
             {
-                return damage * 2;
+                return Damage * 2;
             }
-            else if (elementType.Equals(ElementType.Normal) && card.elementType.Equals(ElementType.Fire))
+            else if (ElementType.Equals(ElementType.Normal) && card.ElementType.Equals(ElementType.Fire))
             {
-                return damage / 2;
+                return Damage / 2;
             }
             //Normal is effective against Water
-            else if (elementType.Equals(ElementType.Normal) && card.elementType.Equals(ElementType.Water))
+            else if (ElementType.Equals(ElementType.Normal) && card.ElementType.Equals(ElementType.Water))
             {
-                return damage * 2;
+                return Damage * 2;
             }
-            else if (elementType.Equals(ElementType.Water) && card.elementType.Equals(ElementType.Normal))
+            else if (ElementType.Equals(ElementType.Water) && card.ElementType.Equals(ElementType.Normal))
             {
-                return damage / 2;
+                return Damage / 2;
             }
-            return damage;
+            return Damage;
         }
 
     }
@@ -94,18 +100,18 @@ namespace MTCG
     { 
         public Spell(string name, int damage, ElementType elementType) : base(name, damage, elementType) { }
 
-        override public int EffectiveDmg(Card card)
+        override public double EffectiveDmg(Card card)
         {
             if(card is Monster)
             {
                 Monster m = card as Monster;
                 //The Kraken is immune against spells
-                if (m.monsterType.Equals(MonsterType.Kraken))
+                if (m.MonsterType.Equals(MonsterType.Kraken))
                 {
                     return 0;
                 }
                 //The armor of Knights is so heavy that WaterSpells make them drown them instantly 
-                if (m.monsterType.Equals(MonsterType.Knight) && elementType.Equals(ElementType.Water))
+                if (m.MonsterType.Equals(MonsterType.Knight) && ElementType.Equals(ElementType.Water))
                 {
                     return Int32.MaxValue;
                 }
@@ -116,14 +122,14 @@ namespace MTCG
 
     class Monster : Card
     {
-        public MonsterType monsterType { get; set; }
+        public MonsterType MonsterType { get; set; }
 
         public Monster(string name, int damage, ElementType elementType, MonsterType monsterType) : base(name, damage, elementType)
         {
-            this.monsterType = monsterType;
+            MonsterType = monsterType;
         }
 
-        override public int EffectiveDmg(Card card)
+        override public double EffectiveDmg(Card card)
         {
             if (card is Spell)
             {
@@ -136,22 +142,22 @@ namespace MTCG
                 Monster m = card as Monster;
 
                 //Goblins are too afraid of Dragons to attack - Dragon wins
-                if (monsterType.Equals(MonsterType.Goblin) && m.monsterType.Equals(MonsterType.Dragon))
+                if (MonsterType.Equals(MonsterType.Goblin) && m.MonsterType.Equals(MonsterType.Dragon))
                 {
                     return 0;
                 }
                 //Wizzard can control Orks so they are not able to damage them - Wizzard wins
-                else if (monsterType.Equals(MonsterType.Ork) && m.monsterType.Equals(MonsterType.Wizzard))
+                else if (MonsterType.Equals(MonsterType.Ork) && m.MonsterType.Equals(MonsterType.Wizzard))
                 {
                     return 0;
                 }
                 //The FireElves know Dragons since they were little and can evade their attacks - FireElves win
-                else if (monsterType.Equals(MonsterType.Dragon) && m.monsterType.Equals(MonsterType.Elf) && m.elementType.Equals(ElementType.Fire))
+                else if (MonsterType.Equals(MonsterType.Dragon) && m.MonsterType.Equals(MonsterType.Elf) && m.ElementType.Equals(ElementType.Fire))
                 {
                     return 0;
                 }
             }
-            return damage;
+            return Damage;
         }
     }
 }

@@ -55,6 +55,7 @@ namespace MTCG
         void ServerHandler(Object o)
         {
             _listener.Start();
+            DB.CreateDBIfNotPresent();
             while (true)
             {
                 TcpClient client = _listener.AcceptTcpClient();
@@ -76,7 +77,7 @@ namespace MTCG
                         }
                         else if (request.Contains("/users"))
                         {
-
+                            DBUser.GetUser(Helper.ExtractUsername(request));
                         }
                         else if (request.Contains("/stats"))
                         {
@@ -103,7 +104,7 @@ namespace MTCG
                         }
                         else if (request.Contains("/packages"))
                         {
-
+                            DBPackage.AddPackage(Helper.ExtractCards(request));
                         }
                         else if (request.Contains("/transactions"))
                         {
