@@ -98,7 +98,7 @@ namespace MTCG
 
     class Spell : Card 
     { 
-        public Spell(string name, int damage, ElementType elementType) : base(name, damage, elementType) { }
+        public Spell(string name, double damage, ElementType elementType) : base(name, damage, elementType) { }
 
         override public double EffectiveDmg(Card card)
         {
@@ -113,7 +113,7 @@ namespace MTCG
                 //The armor of Knights is so heavy that WaterSpells make them drown them instantly 
                 if (m.MonsterType.Equals(MonsterType.Knight) && ElementType.Equals(ElementType.Water))
                 {
-                    return Int32.MaxValue;
+                    return Double.MaxValue;
                 }
             }
             return ElementalDmg(card);
@@ -124,7 +124,7 @@ namespace MTCG
     {
         public MonsterType MonsterType { get; set; }
 
-        public Monster(string name, int damage, ElementType elementType, MonsterType monsterType) : base(name, damage, elementType)
+        public Monster(string name, double damage, ElementType elementType, MonsterType monsterType) : base(name, damage, elementType)
         {
             MonsterType = monsterType;
         }

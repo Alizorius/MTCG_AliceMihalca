@@ -2,6 +2,7 @@
 using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +20,16 @@ namespace MTCG
                 "SELECT MAX(packageID) FROM cardTable",
                 conn);
 
-            packageID = (int)cmd.Parameters[1].Value + 1;
+            object max = cmd.ExecuteScalar();
+
+            if (max is System.DBNull)
+            {
+                packageID = 1;
+            }
+            else
+            {
+                packageID = (int)max + 1;
+            }
 
             foreach (var card in cards)
             {
@@ -34,26 +44,32 @@ namespace MTCG
                 cardCmd.Parameters[1].NpgsqlDbType = NpgsqlDbType.Varchar;
 
                 cardCmd.Parameters.AddWithValue("p3", card.Damage);
-                cardCmd.Parameters[2].NpgsqlDbType = NpgsqlDbType.Varchar;
+                cardCmd.Parameters[2].NpgsqlDbType = NpgsqlDbType.Double;
 
-                cardCmd.Parameters.AddWithValue("p4", card.ElementType);
+                cardCmd.Parameters.AddWithValue("p4", card.ElementType.ToString());
                 cardCmd.Parameters[3].NpgsqlDbType = NpgsqlDbType.Varchar;
 
-                cardCmd.Parameters.AddWithValue("p6", card.PackageId);
+                if (card is Monster)
+                {
+                    Monster m = card as Monster;
+                    cardCmd.Parameters.AddWithValue("p5", m.MonsterType.ToString());
+                }
+                else
+                {
+                    cardCmd.Parameters.AddWithValue("p5", DBNull.Value);
+                }
+                cardCmd.Parameters[4].NpgsqlDbType = NpgsqlDbType.Varchar;
+
+                cardCmd.Parameters.AddWithValue("p6", packageID);
                 cardCmd.Parameters[5].NpgsqlDbType = NpgsqlDbType.Integer;
 
-                cardCmd.Parameters.AddWithValue("p7", card.Username);
+                cardCmd.Parameters.AddWithValue("p7", DBNull.Value);
                 cardCmd.Parameters[6].NpgsqlDbType = NpgsqlDbType.Integer;
 
                 cardCmd.Parameters.AddWithValue("p8", false);
                 cardCmd.Parameters[7].NpgsqlDbType = NpgsqlDbType.Boolean;
 
-                if(card is Monster)
-                {
-                    Monster m = card as Monster;
-                    cardCmd.Parameters.AddWithValue("p5", m.MonsterType);
-                    cardCmd.Parameters[4].NpgsqlDbType = NpgsqlDbType.Varchar;
-                }
+                
 
                 cardCmd.ExecuteNonQuery();
             }

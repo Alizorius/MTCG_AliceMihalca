@@ -79,6 +79,25 @@ namespace MTCG
                 cmd.ExecuteNonQuery();
             }
 
+            using (var cmd = new NpgsqlCommand(@"
+                CREATE TABLE IF NOT EXISTS statsTable(
+                username VARCHAR(256) NOT NULL,
+                elo BIGINT NOT NULL,
+                wins BIGINT NOT NULL,
+                looses BIGINT NOT NULL,
+                draws BIGINT NOT NULL,
+                coins BIGINT NOT NULL,
+                realname VARCHAR(256),
+                bio VARCHAR(256),
+                image VARCHAR(256),
+                PRIMARY KEY(username),
+                CONSTRAINT fk_user
+                    FOREIGN KEY(username)
+                        REFERENCES userSchema(username)
+                )", conn))
+            {
+                cmd.ExecuteNonQuery();
+            }
 
             conn.Close();
 

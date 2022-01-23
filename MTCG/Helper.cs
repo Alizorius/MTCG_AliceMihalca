@@ -23,17 +23,22 @@ namespace MTCG
 
             string[] subs = request.Substring(request.IndexOf('[')).Trim('[', ']').Split("}, {");
 
-            for (int i = 1; i < subs.Length; i++)
+            for (int i = 0; i < subs.Length; i++)
             {
-                if (i != 0)
+                if (i == 0)
                 {
-                    subs[i] = "{" + subs[i] + "}";
+                    subs[i] = subs[i] + "}";
+                }
+                else if (i == subs.Length - 1)
+                {
+                    subs[i] = "{" + subs[i];
                 }
                 else
                 {
-                    subs[i] = subs[i] + "}";
-                 
+                    subs[i] = "{" + subs[i] + "}";
                 }
+
+
                 if (subs[i].Contains("Fire"))
                 {
                     elementType = ElementType.Fire;
@@ -46,7 +51,15 @@ namespace MTCG
                 {
                     elementType = ElementType.Normal;
                 }
-                if (subs[i].Contains("Monster"))
+
+
+                if (subs[i].Contains("Spell"))
+                {
+                    Spell card = JsonConvert.DeserializeObject<Spell>(subs[i]);
+                    card.ElementType = elementType;
+                    cards.Add(card);
+                }
+                else
                 {
                     if (subs[i].Contains("Goblin"))
                     {
@@ -77,16 +90,9 @@ namespace MTCG
                         monsterType = MonsterType.Kraken;
                     }
 
-                    Monster card = JsonConvert.DeserializeObject<Monster>(request.Substring(request.IndexOf('{')));
+                    Monster card = JsonConvert.DeserializeObject<Monster>(subs[i]);
                     card.ElementType = elementType;
                     card.MonsterType = monsterType;
-                    cards.Add(card);
-
-                }
-                else
-                {
-                    Spell card = JsonConvert.DeserializeObject<Spell>(request.Substring(request.IndexOf('{')));
-                    card.ElementType = elementType;
                     cards.Add(card);
                 }
             }

@@ -52,7 +52,7 @@ namespace MTCG
             using var conn = DB.Connection();
 
             using var cmd = new NpgsqlCommand(
-                    "SELECT * FROM userTabel WHERE username=@p1",
+                    "SELECT * FROM userTable WHERE username=@p1",
                     conn);
 
             cmd.Parameters.AddWithValue("p1", username);
