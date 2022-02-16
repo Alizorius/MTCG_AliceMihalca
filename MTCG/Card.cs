@@ -100,6 +100,14 @@ namespace MTCG
     { 
         public Spell(string name, double damage, ElementType elementType) : base(name, damage, elementType) { }
 
+        public Spell(string id, string name, double damage, ElementType elementType, int packageId, string username, bool inDeck) : base(name, damage, elementType) 
+        {
+            Id = id;
+            PackageId = packageId;
+            Username = username;
+            InDeck = inDeck;
+        }
+
         override public double EffectiveDmg(Card card)
         {
             if(card is Monster)
@@ -127,6 +135,15 @@ namespace MTCG
         public Monster(string name, double damage, ElementType elementType, MonsterType monsterType) : base(name, damage, elementType)
         {
             MonsterType = monsterType;
+        }
+
+        public Monster(string id, string name, double damage, ElementType elementType, MonsterType monsterType, int packageId, string username, bool inDeck) : base(name, damage, elementType)
+        {
+            Id = id;
+            MonsterType = monsterType;
+            PackageId = packageId;
+            Username = username;
+            InDeck = inDeck;
         }
 
         override public double EffectiveDmg(Card card)

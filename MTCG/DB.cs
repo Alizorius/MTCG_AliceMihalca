@@ -93,7 +93,7 @@ namespace MTCG
                 PRIMARY KEY(username),
                 CONSTRAINT fk_user
                     FOREIGN KEY(username)
-                        REFERENCES userSchema(username)
+                        REFERENCES userTabel(username)
                 )", conn))
             {
                 cmd.ExecuteNonQuery();

@@ -15,6 +15,19 @@ namespace MTCG
 
         public static string ExtractUsername(string request) { return request.Split(' ', '/')[3]; }
 
+        public static string ExtractUsernameToken(string request)
+        {
+            string[] subs = request.Split(' ', '-');
+            for (int i = 0; i < subs.Length; i++)
+            {
+                if (subs[i].Equals("Basic"))
+                {
+                    return subs[i + 1];
+                }
+            }
+            return "";
+        }
+
         public static List<Card> ExtractCards(string request)
         {
             ElementType elementType;

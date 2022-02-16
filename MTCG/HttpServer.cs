@@ -77,7 +77,11 @@ namespace MTCG
                         }
                         else if (request.Contains("/users"))
                         {
-                            DBUser.GetUser(Helper.ExtractUsername(request));
+                            if (Helper.ExtractUsername(request).Equals(Helper.ExtractUsernameToken(request)))
+                            {
+                                DBUser.GetUser(Helper.ExtractUsername(request));
+                            }
+                            //error
                         }
                         else if (request.Contains("/stats"))
                         {
@@ -108,7 +112,7 @@ namespace MTCG
                         }
                         else if (request.Contains("/transactions"))
                         {
-
+                            DBPackage.AcquirePackage(Helper.ExtractUsernameToken(request));
                         }
                         else if (request.Contains("/tradings"))
                         {
