@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
 using System.Threading.Tasks;
 
 
@@ -97,7 +98,8 @@ namespace MTCG
     }
 
     class Spell : Card 
-    { 
+    {
+        [JsonConstructor]
         public Spell(string name, double damage, ElementType elementType) : base(name, damage, elementType) { }
 
         public Spell(string id, string name, double damage, ElementType elementType, int packageId, string username, bool inDeck) : base(name, damage, elementType) 
@@ -132,6 +134,7 @@ namespace MTCG
     {
         public MonsterType MonsterType { get; set; }
 
+        [JsonConstructor]
         public Monster(string name, double damage, ElementType elementType, MonsterType monsterType) : base(name, damage, elementType)
         {
             MonsterType = monsterType;

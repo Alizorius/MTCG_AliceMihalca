@@ -27,16 +27,16 @@ namespace MTCG
                     using var conn = DB.Connection();
 
                     //error handling
-                    using var userTabelCmd = new NpgsqlCommand(
-                            "INSERT INTO userTabel (username, password, role) " +
+                    using var userTableCmd = new NpgsqlCommand(
+                            "INSERT INTO userTable (username, password, role) " +
                             "VALUES(@p1, @p2, @p3)",
                             conn);
 
-                    userTabelCmd.Parameters.AddWithValue("p1", NpgsqlDbType.Varchar, user.Username);
-                    userTabelCmd.Parameters.AddWithValue("p2", NpgsqlDbType.Varchar, user.Password);
-                    userTabelCmd.Parameters.AddWithValue("p3", NpgsqlDbType.Varchar, user.Role.ToString());
+                    userTableCmd.Parameters.AddWithValue("p1", NpgsqlDbType.Varchar, user.Username);
+                    userTableCmd.Parameters.AddWithValue("p2", NpgsqlDbType.Varchar, user.Password);
+                    userTableCmd.Parameters.AddWithValue("p3", NpgsqlDbType.Varchar, user.Role.ToString());
 
-                    userTabelCmd.ExecuteNonQuery();
+                    userTableCmd.ExecuteNonQuery();
 
 
                     return true;
@@ -44,8 +44,6 @@ namespace MTCG
             }
             return false;
         }
-
-        
 
         public static User GetUser(string username)
         {

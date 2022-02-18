@@ -80,7 +80,6 @@ namespace MTCG
             //check if player has enough money
 
             using var conn = DB.Connection();
-            NpgsqlDataReader? dr = null;
 
             using var cmd = new NpgsqlCommand(
                 "SELECT MAX(packageID) FROM cardTable",
@@ -96,37 +95,9 @@ namespace MTCG
             {
                 int packageId = (int)max;
 
-                //using var cardQueryCmd = new NpgsqlCommand(
-                //    "SELECT * from cardTable WHERE package = @p1",
-                //    conn);
-                //cardQueryCmd.Parameters.AddWithValue("p1", packageId);
-                //cardQueryCmd.Parameters[0].NpgsqlDbType = NpgsqlDbType.Integer;
-
-                //dr = cardQueryCmd.ExecuteReader();
-                //var cards = new List<Card>();
-                //while (dr.Read())
-                //{
-                //    if(dr.GetString(4))
-                //    {
-                //        cards.Add(new Monster(
-                //            dr.GetString(0), dr.GetString(1), dr.GetDouble(2),
-                //            dr.GetData(3), dr.GetData(4), dr.GetInt32(5), username, false
-                //        ));
-                //    }
-                //    else
-                //    {
-                //        cards.Add(new Spell(
-                //            dr.GetString(0), dr.GetString(1), dr.GetDouble(2),
-                //            null, null, null, username, false
-                //        ));
-                //    }   
-                //}
-                //dr.Close();
-
-
                 using var cardUpdateCmd = new NpgsqlCommand(
                 "UPDATE cardTable " +
-                "SET username = @p1 AND packageID = NULL WHERE packageID = @p2",
+                "SET username = @p1, packageID = NULL WHERE packageID = @p2",
                 conn);
                 cardUpdateCmd.Parameters.AddWithValue("p1", username);
                 cardUpdateCmd.Parameters[0].NpgsqlDbType = NpgsqlDbType.Varchar;
@@ -134,12 +105,7 @@ namespace MTCG
                 cardUpdateCmd.Parameters[1].NpgsqlDbType = NpgsqlDbType.Integer;
                 
                 cardUpdateCmd.ExecuteNonQuery();
-                
             }
-
-
-            //unfinished
-
             return true; //must also return false if failed?
         }
     }

@@ -69,7 +69,7 @@ namespace MTCG
                     {
                         if (request.Contains("/cards"))
                         {
-
+                            DBCard.GetAllUserCards(Helper.ExtractUsernameToken(request));
                         }
                         else if (request.Contains("/deck"))
                         {
@@ -106,13 +106,13 @@ namespace MTCG
                         {
 
                         }
-                        else if (request.Contains("/packages"))
-                        {
-                            DBPackage.AddPackage(Helper.ExtractCards(request));
-                        }
                         else if (request.Contains("/transactions"))
                         {
                             DBPackage.AcquirePackage(Helper.ExtractUsernameToken(request));
+                        }
+                        else if (request.Contains("/packages"))
+                        {
+                            DBPackage.AddPackage(Helper.ExtractCards(request));
                         }
                         else if (request.Contains("/tradings"))
                         {
