@@ -28,6 +28,8 @@ namespace MTCG
             return "";
         }
 
+        public static string[] ExtractCardIds(string request) { return request.Split('"', ',', ' ', '/'); }
+
         public static List<Card> ExtractCards(string request)
         {
             ElementType elementType;
@@ -111,5 +113,7 @@ namespace MTCG
             }
             return cards;
         }
+
+        
     }
 }

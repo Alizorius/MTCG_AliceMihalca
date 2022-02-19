@@ -60,7 +60,7 @@ namespace MTCG
             return Name.GetHashCode();
         }
 
-        abstract public double EffectiveDmg(Card card);
+        public abstract double EffectiveDmg(Card card);
 
         public double ElementalDmg(Card card)
         {
@@ -95,6 +95,24 @@ namespace MTCG
             return Damage;
         }
 
+        public virtual string CardToString()
+        {
+            string damageStr = Damage.ToString();
+            string elementStr = ElementType.ToString();
+            string inDeckStr = InDeck.ToString();
+
+            string card = "Id: " + Id + ", Name: " + Name + ", Damage: " + damageStr + ", Element-Type: " + elementStr + ", in Deck: " + inDeckStr + "\r\n";
+
+            return card;
+        }
+
+        public string PlainFormat()
+        {
+            string damageStr = Damage.ToString();
+            string card = "Name: " + Name + ", Damage: " + damageStr + "\r\n";
+
+            return card;
+        }
     }
 
     class Spell : Card 
@@ -110,7 +128,7 @@ namespace MTCG
             InDeck = inDeck;
         }
 
-        override public double EffectiveDmg(Card card)
+        public override double EffectiveDmg(Card card)
         {
             if(card is Monster)
             {
@@ -149,7 +167,7 @@ namespace MTCG
             InDeck = inDeck;
         }
 
-        override public double EffectiveDmg(Card card)
+        public override double EffectiveDmg(Card card)
         {
             if (card is Spell)
             {
@@ -178,6 +196,18 @@ namespace MTCG
                 }
             }
             return Damage;
+        }
+
+        public override string CardToString()
+        {
+            string damageStr = Damage.ToString();
+            string elementStr = ElementType.ToString();
+            string monsterStr = MonsterType.ToString();
+            string inDeckStr = InDeck.ToString();
+
+            string card = "Id: " + Id + ", Name: " + Name + ", Damage: " + damageStr + ", Element-Type: " + elementStr + ", Monster-Type: " + monsterStr + ", in Deck: " + inDeckStr + "\r\n";
+
+            return card;
         }
     }
 }

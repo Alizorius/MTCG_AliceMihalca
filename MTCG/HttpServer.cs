@@ -64,16 +64,22 @@ namespace MTCG
                 try
                 {
                     var request = ReadRequest(stream);
+                    bool format = false;
 
                     if (request.StartsWith("GET"))
                     {
                         if (request.Contains("/cards"))
                         {
-                            DBCard.GetAllUserCards(Helper.ExtractUsernameToken(request));
+                            HttpResponse.SendCards(format, stream, DBCard.GetAllUserCards(Helper.ExtractUsernameToken(request)));
+
                         }
                         else if (request.Contains("/deck"))
                         {
-
+                            if (request.Contains("format=plain"))
+                            {
+                                format = true;
+                            }
+                            HttpResponse.SendCards(format, stream, DBCard.GetDeck(Helper.ExtractUsernameToken(request)));
                         }
                         else if (request.Contains("/users"))
                         {
@@ -123,7 +129,7 @@ namespace MTCG
                     {
                         if (request.Contains("/deck"))
                         {
-
+                            DBCard.ConfigureDeck(Helper.ExtractUsernameToken(request), Helper.ExtractCardIds(request));
                         }
                         else if (request.Contains("/users"))
                         {

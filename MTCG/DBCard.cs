@@ -10,10 +10,9 @@ namespace MTCG
 {
     class DBCard
     {
-        public static bool GetAllUserCards(string username)
+        public static List<Card> GetAllUserCards(string username)
         {
             using var conn = DB.Connection();
-            NpgsqlDataReader? dr = null;
 
             using var cardQueryCmd = new NpgsqlCommand(
                 "SELECT * from cardTable WHERE username = @p1",
@@ -21,28 +20,91 @@ namespace MTCG
             cardQueryCmd.Parameters.AddWithValue("p1", username);
             cardQueryCmd.Parameters[0].NpgsqlDbType = NpgsqlDbType.Varchar;
 
-            dr = cardQueryCmd.ExecuteReader();
+            return GetCards(cardQueryCmd, username);
+        }
+
+        public static List<Card> GetDeck(string username) 
+        {
+            using var conn = DB.Connection();
+
+            using var cardQueryCmd = new NpgsqlCommand(
+                "SELECT * from cardTable WHERE username = @p1, deck = true",
+                conn);
+            cardQueryCmd.Parameters.AddWithValue("p1", username);
+            cardQueryCmd.Parameters[0].NpgsqlDbType = NpgsqlDbType.Varchar;
+
+            return GetCards(cardQueryCmd, username);
+        }
+
+        private static List<Card> GetCards(NpgsqlCommand cardQueryCmd, string username)
+        {
+            NpgsqlDataReader? reader = null;
+
+            reader = cardQueryCmd.ExecuteReader();
             var cards = new List<Card>();
-            while (dr.Read())
+            while (reader.Read())
             {
-                ElementType elementType = (ElementType)Enum.Parse(typeof(ElementType), dr.GetString(3));
-                
-                if (!String.IsNullOrEmpty(dr.GetString(4)))
+                int packageId;
+                ElementType elementType = (ElementType)Enum.Parse(typeof(ElementType), reader.GetString(3));
+
+                if (reader.IsDBNull(5))
                 {
-                    MonsterType monsterType = (MonsterType)Enum.Parse(typeof(MonsterType), dr.GetString(4));
-                    
+                    packageId = 0;
+                }
+                else
+                {
+                    packageId = reader.GetInt32(5);
+                }
+
+                if (!reader.IsDBNull(4))
+                {
+                    MonsterType monsterType = (MonsterType)Enum.Parse(typeof(MonsterType), reader.GetString(4));
+
                     cards.Add(new Monster(
-                        dr.GetString(0), dr.GetString(1), dr.GetDouble(2),
-                        elementType, monsterType, dr.GetInt32(5), username, false
+                        reader.GetString(0), reader.GetString(1), reader.GetDouble(2),
+                        elementType, monsterType, packageId, username, false
                     ));
                 }
-               
-                cards.Add(new Spell(
-                    dr.GetString(0), dr.GetString(1), dr.GetDouble(2),
-                    elementType, dr.GetInt32(5), username, false
-                ));
+                else
+                {
+                    cards.Add(new Spell(
+                        reader.GetString(0), reader.GetString(1), reader.GetDouble(2),
+                        elementType, packageId, username, false
+                    ));
+                }
             }
-            dr.Close();
+            reader.Close();
+
+            if (cards == null)
+            {
+                //if no cards available under the given conditions
+                return null;
+                //error handling
+            }
+
+            return cards;
+        }
+
+        public static bool ConfigureDeck(string username, string[] cardIds)
+        {
+            using var conn = DB.Connection();
+
+            //should fail if user doesnt have the cards 
+            //or card number lower (or higher?) than 4
+
+            foreach(var Id in cardIds)
+            {
+                using var cardUpdateCmd = new NpgsqlCommand(
+                "UPDATE cardTable " +
+                "SET deck = true WHERE username = @p1, id = @p2",
+                conn);
+                cardUpdateCmd.Parameters.AddWithValue("p1", username);
+                cardUpdateCmd.Parameters[0].NpgsqlDbType = NpgsqlDbType.Varchar;
+                cardUpdateCmd.Parameters.AddWithValue("p2", Id);
+                cardUpdateCmd.Parameters[1].NpgsqlDbType = NpgsqlDbType.Varchar;
+
+                cardUpdateCmd.ExecuteNonQuery();
+            }
 
             return true;
         }
