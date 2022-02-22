@@ -54,6 +54,10 @@ namespace MTCG
                 username VARCHAR(256) NOT NULL,
                 password VARCHAR(256) NOT NULL,
                 role VARCHAR(256) NOT NULL,
+                displayname VARCHAR(256),
+                bio VARCHAR(256),
+                image VARCHAR(256),
+                coins INTEGER NOT NULL,
                 PRIMARY KEY(username)
                 )", conn))
             {
@@ -80,16 +84,12 @@ namespace MTCG
             }
 
             using (var cmd = new NpgsqlCommand(@"
-                CREATE TABLE IF NOT EXISTS statsTable(
+                CREATE TABLE IF NOT EXISTS scoreTable(
                 username VARCHAR(256) NOT NULL,
-                elo BIGINT NOT NULL,
-                wins BIGINT NOT NULL,
-                looses BIGINT NOT NULL,
-                draws BIGINT NOT NULL,
-                coins BIGINT NOT NULL,
-                realname VARCHAR(256),
-                bio VARCHAR(256),
-                image VARCHAR(256),
+                elo INTEGER NOT NULL,
+                wins INTEGER NOT NULL,
+                losses INTEGER NOT NULL,
+                draws INTEGER NOT NULL,
                 PRIMARY KEY(username),
                 CONSTRAINT fk_user
                     FOREIGN KEY(username)

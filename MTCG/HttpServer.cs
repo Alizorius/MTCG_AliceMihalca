@@ -91,7 +91,7 @@ namespace MTCG
                         }
                         else if (request.Contains("/stats"))
                         {
-
+                            HttpResponse.SendStats(stream, DBScore.GetStats(Helper.ExtractUsernameToken(request)));
                         }
                         else if (request.Contains("/score"))
                         {
@@ -133,7 +133,10 @@ namespace MTCG
                         }
                         else if (request.Contains("/users"))
                         {
-
+                            if (Helper.ExtractUsername(request).Equals(Helper.ExtractUsernameToken(request)))
+                            {
+                                DBUser.UpdateUserData(Helper.ExtractUsernameToken(request), Helper.ExtractUserData(request));
+                            }
                         }
                     }
                     else if (request.StartsWith("DELETE"))

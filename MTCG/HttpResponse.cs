@@ -26,5 +26,19 @@ namespace MTCG
             byte[] msg = System.Text.Encoding.ASCII.GetBytes(cardsStr);
             stream.Write(msg, 0, msg.Length);
         }
+
+        public static void SendStats(NetworkStream stream, Score score)
+        {
+            string statsStr = null;
+
+            statsStr += score.Username;
+            statsStr += score.Elo.ToString();
+            statsStr += score.Wins.ToString();
+            statsStr += score.Losses.ToString();
+            statsStr += score.Draws.ToString();
+
+            byte[] msg = System.Text.Encoding.ASCII.GetBytes(statsStr);
+            stream.Write(msg, 0, msg.Length);
+        }
     }
 }

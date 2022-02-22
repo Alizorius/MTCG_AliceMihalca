@@ -114,6 +114,11 @@ namespace MTCG
             return cards;
         }
 
-        
+        public static Dictionary<string, string> ExtractUserData(string request)
+        {
+            string userData = request.Substring(request.IndexOf('{'));
+            Dictionary<string, string> data = JsonConvert.DeserializeObject<Dictionary<string, string>>(userData);
+            return data;
+        }
     }
 }
