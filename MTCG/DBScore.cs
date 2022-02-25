@@ -75,5 +75,30 @@ namespace MTCG
 
             scoreUpdateCmd.ExecuteNonQuery();
         }
+
+        public static List<Score> GetScoreBoard()
+        {
+            using var conn = DB.Connection();
+            NpgsqlDataReader? reader = null;
+
+            using var cmd = new NpgsqlCommand(
+                    "SELECT * FROM scoreTable ORDER BY elo DESC LIMIT 10",
+                    conn);
+
+            reader = cmd.ExecuteReader();
+            var scores = new List<Score>();
+            while (reader.Read())
+            {
+                var username = reader.GetString(0);
+                var elo = reader.GetInt32(1);
+                var wins = reader.GetInt32(2);
+                var looses = reader.GetInt32(3);
+                var draws = reader.GetInt32(4);
+                scores.Add(new Score(username, elo, wins, looses, draws));
+            }
+            reader.Close();
+
+            return scores;
+        }
     }
 }

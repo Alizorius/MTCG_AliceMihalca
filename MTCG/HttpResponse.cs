@@ -49,5 +49,20 @@ namespace MTCG
 
             SendMessage(stream, statsStr);
         }
+
+        public static void SendScoreboard(NetworkStream stream, List<Score> scores)
+        {
+            string scoreStr = null;
+            foreach (var score in scores)
+            {
+                scoreStr += "Elo: " + score.Elo.ToString() + ", ";
+                scoreStr += "Username: " + score.Username;
+                //scoreStr += "Wins: " + score.Wins.ToString() + ", ";
+                //scoreStr += "Losses: " + score.Losses.ToString() + ", ";
+                //scoreStr += "Draws: " + score.Draws.ToString();
+                scoreStr += "\n\r";
+            }
+            SendMessage(stream, scoreStr);
+        }
     }
 }

@@ -95,7 +95,7 @@ namespace MTCG
                         }
                         else if (request.Contains("/score"))
                         {
-
+                            HttpResponse.SendScoreboard(stream, DBScore.GetScoreBoard());
                         }
                         else if (request.Contains("/tradings"))
                         {

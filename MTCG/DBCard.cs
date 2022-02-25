@@ -28,7 +28,7 @@ namespace MTCG
             using var conn = DB.Connection();
 
             using var cardQueryCmd = new NpgsqlCommand(
-                "SELECT * from cardTable WHERE username = @p1, deck = true",
+                "SELECT * from cardTable WHERE username = @p1 AND deck = true",
                 conn);
             cardQueryCmd.Parameters.AddWithValue("p1", username);
             cardQueryCmd.Parameters[0].NpgsqlDbType = NpgsqlDbType.Varchar;
@@ -96,7 +96,7 @@ namespace MTCG
             {
                 using var cardUpdateCmd = new NpgsqlCommand(
                 "UPDATE cardTable " +
-                "SET deck = true WHERE username = @p1, id = @p2",
+                "SET deck = true WHERE username = @p1 AND id = @p2",
                 conn);
                 cardUpdateCmd.Parameters.AddWithValue("p1", username);
                 cardUpdateCmd.Parameters[0].NpgsqlDbType = NpgsqlDbType.Varchar;
