@@ -14,7 +14,7 @@ namespace MTCG
         public int Losses { get; set; }
         public int Draws { get; set; }
 
-        public Score(string username, int elo = 0, int wins = 0, int losses = 0, int draws = 0)
+        public Score(string username, int elo = 100, int wins = 0, int losses = 0, int draws = 0)
         {
             Username = username;
             Elo = elo;

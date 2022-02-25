@@ -23,7 +23,7 @@ namespace MTCG
             return GetCards(cardQueryCmd, username);
         }
 
-        public static List<Card> GetDeck(string username) 
+        public static Deck GetDeck(string username) 
         {
             using var conn = DB.Connection();
 
@@ -33,7 +33,7 @@ namespace MTCG
             cardQueryCmd.Parameters.AddWithValue("p1", username);
             cardQueryCmd.Parameters[0].NpgsqlDbType = NpgsqlDbType.Varchar;
 
-            return GetCards(cardQueryCmd, username);
+            return new Deck(GetCards(cardQueryCmd, username), username);
         }
 
         private static List<Card> GetCards(NpgsqlCommand cardQueryCmd, string username)

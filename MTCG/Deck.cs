@@ -8,38 +8,41 @@ namespace MTCG
 {
     class Deck
     {
-        static Random rnd = new Random();
-        public List<Card> deckList = new List<Card>();
-        public User user;
+        static Random Rnd = new Random();
+        public List<Card> DeckList = new List<Card>();
+        public string Username;
 
-        public Deck(List<Card> deckList, User user)
+        public Deck(List<Card> deckList, User user) : this(deckList, user.Username) { }
+
+        public Deck(List<Card> deckList, string username)
         {
-            this.deckList = deckList;
-            this.user = user;
+            DeckList = deckList;
+            Username = username;
         }
+
         public Deck(Card card1, Card card2, Card card3, Card card4)
         {
-            deckList.Add(card1);
-            deckList.Add(card2);
-            deckList.Add(card3);
-            deckList.Add(card4);
+            DeckList.Add(card1);
+            DeckList.Add(card2);
+            DeckList.Add(card3);
+            DeckList.Add(card4);
         }
 
         public int GetSize()
         {
-            return deckList.Count;
+            return DeckList.Count;
         }
         public Card GetRndCard()
         {
-            return deckList[rnd.Next(deckList.Count)];
+            return DeckList[Rnd.Next(DeckList.Count)];
         }
         public void AddCard(Card c)
         {
-            deckList.Add(c);
+            DeckList.Add(c);
         }
         public void RemoveCard(Card c)
         {
-            deckList.Remove(c);
+            DeckList.Remove(c);
         }
     }
 

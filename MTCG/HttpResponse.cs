@@ -7,8 +7,19 @@ using System.Threading.Tasks;
 
 namespace MTCG
 {
-    class HttpResponse
+    static class HttpResponse
     {
+        public static void SendMessage(NetworkStream stream, string message)
+        {
+            byte[] msg = System.Text.Encoding.ASCII.GetBytes(message);
+            stream.Write(msg, 0, msg.Length);
+        }
+
+        public static void SendCards(bool plainFormat, NetworkStream stream, Deck deck)
+        {
+            SendCards(plainFormat, stream, deck.DeckList);
+        }
+
         public static void SendCards(bool plainFormat, NetworkStream stream, List<Card> cards)
         {
             string cardsStr = null;
@@ -23,8 +34,7 @@ namespace MTCG
                     cardsStr += card.CardToString();
                 }
             }
-            byte[] msg = System.Text.Encoding.ASCII.GetBytes(cardsStr);
-            stream.Write(msg, 0, msg.Length);
+            SendMessage(stream, cardsStr);
         }
 
         public static void SendStats(NetworkStream stream, Score score)
@@ -37,8 +47,7 @@ namespace MTCG
             statsStr += score.Losses.ToString();
             statsStr += score.Draws.ToString();
 
-            byte[] msg = System.Text.Encoding.ASCII.GetBytes(statsStr);
-            stream.Write(msg, 0, msg.Length);
+            SendMessage(stream, statsStr);
         }
     }
 }

@@ -124,6 +124,10 @@ namespace MTCG
                         {
 
                         }
+                        else if (request.Contains("/battles"))
+                        {
+                            BattleRequests.AddRequestToPool(stream, Helper.ExtractUsernameToken(request));
+                        }
                     }
                     else if (request.StartsWith("PUT"))
                     {
