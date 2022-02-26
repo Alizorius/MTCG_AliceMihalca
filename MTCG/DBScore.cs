@@ -11,8 +11,30 @@ namespace MTCG
 {
     class DBScore
     {
-        public static Score GetStats(string username)
+        public static void SetDefaultStats(string request)
         {
+            string username = Helper.ExtractUser(request).Username;
+
+            using var conn = DB.Connection();
+
+            using var cmd = new NpgsqlCommand(
+                    "INSERT INTO scoreTable (username, elo, wins, losses, draws) " +
+                    "VALUES(@p1, @p2, @p3, @p4, @p5)",
+                     conn);
+
+            cmd.Parameters.AddWithValue("p1", NpgsqlDbType.Varchar, username);
+            cmd.Parameters.AddWithValue("p2", NpgsqlDbType.Integer, 100);
+            cmd.Parameters.AddWithValue("p3", NpgsqlDbType.Integer, 0);
+            cmd.Parameters.AddWithValue("p4", NpgsqlDbType.Integer, 0);
+            cmd.Parameters.AddWithValue("p5", NpgsqlDbType.Integer, 0);
+
+            cmd.ExecuteNonQuery();
+        }
+
+
+        public static Score GetStats(string request)
+        {
+            string username = Helper.ExtractUsernameToken(request);
             using var conn = DB.Connection();
 
             using var cmd = new NpgsqlCommand(
@@ -22,33 +44,18 @@ namespace MTCG
             cmd.Parameters.AddWithValue("p1", username);
             cmd.Parameters[0].NpgsqlDbType = NpgsqlDbType.Varchar;
 
-            cmd.Parameters.Add(new NpgsqlParameter("username", NpgsqlDbType.Varchar)
-            { Direction = ParameterDirection.Output });
-            cmd.Parameters.Add(new NpgsqlParameter("elo", NpgsqlDbType.Integer)
-            { Direction = ParameterDirection.Output });
-            cmd.Parameters.Add(new NpgsqlParameter("wins", NpgsqlDbType.Integer)
-            { Direction = ParameterDirection.Output });
-            cmd.Parameters.Add(new NpgsqlParameter("losses", NpgsqlDbType.Integer)
-            { Direction = ParameterDirection.Output });
-            cmd.Parameters.Add(new NpgsqlParameter("draws", NpgsqlDbType.Integer)
-            { Direction = ParameterDirection.Output });
+            NpgsqlDataReader? reader = null;
+            reader = cmd.ExecuteReader();
 
-            cmd.ExecuteNonQuery();
-
-            if (cmd.Parameters[1].Value != null &&
-                    cmd.Parameters[2].Value != null &&
-                    cmd.Parameters[3].Value != null &&
-                    cmd.Parameters[4].Value != null &&
-                    cmd.Parameters[5].Value != null)
-
+            if (reader.Read())
             {
-                return new Score(
-                    (string)cmd.Parameters[1].Value!,
-                    (int)cmd.Parameters[2].Value!,
-                    (int)cmd.Parameters[3].Value!,
-                    (int)cmd.Parameters[4].Value!,
-                    (int)cmd.Parameters[5].Value!);
+                Score score = new Score(reader.GetString(0), reader.GetInt32(1), reader.GetInt32(2), reader.GetInt32(3), reader.GetInt32(4));
+
+                reader.Close();
+
+                return score;
             }
+            reader.Close();
 
             return null;
         }

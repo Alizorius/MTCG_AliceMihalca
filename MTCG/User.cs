@@ -32,21 +32,8 @@ namespace MTCG
             Username = username;
             Password = password;
             Role = UserRoleStringToEnum(role);
-        }
+            Coins = 20;
 
-        public User(string username, string password, string displayname, string bio, string image, int coins = 20, string role = "user")
-        {
-            if (role == null)
-            {
-                role = "user";
-            }
-            Username = username;
-            Password = password;
-            Role = UserRoleStringToEnum(role);
-            Displayname = displayname;
-            Bio = bio;
-            Image = image;
-            Coins = coins;
         }
 
         private static Role UserRoleStringToEnum(string role)

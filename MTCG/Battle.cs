@@ -10,7 +10,7 @@ namespace MTCG
 {
     class Battle
     {
-        public string battleLog;
+        public string battleLog = "";
 
         public void DeckBattle(ClientTuple client1, ClientTuple client2)
         {
@@ -27,7 +27,6 @@ namespace MTCG
 
                 switch (CardBattle(card1, card2))
                 {
-                    //incomplete 
                     case 2:
                         battleLog += deck2.Username + " won this Round. (You gain your oponents card in your deck)\n\r";
                         if (deck1.GetSize().Equals(1))

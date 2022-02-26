@@ -12,11 +12,11 @@ namespace MTCG
 {
     static class DBUser
     {
-       
+
         public static bool AddUser(string request)
         {
             User user = Helper.ExtractUser(request);
-  
+
             string pattern = "[a-zA-Z0-9]{5,11}";
             Regex defaultRegex = new Regex(pattern);
 
@@ -42,73 +42,60 @@ namespace MTCG
 
                     userTableCmd.ExecuteNonQuery();
 
-
                     return true;
                 }
             }
             return false;
         }
 
-        public static User GetUser(string username)
+        public static User GetUser(string request)
         {
+            string username = Helper.ExtractUsername(request);
             using var conn = DB.Connection();
 
             using var cmd = new NpgsqlCommand(
                     "SELECT * FROM userTable WHERE username = @p1",
                     conn);
-
             cmd.Parameters.AddWithValue("p1", username);
             cmd.Parameters[0].NpgsqlDbType = NpgsqlDbType.Varchar;
 
-            cmd.Parameters.Add(new NpgsqlParameter("username", NpgsqlDbType.Varchar)
-            { Direction = ParameterDirection.Output });
-            cmd.Parameters.Add(new NpgsqlParameter("password", NpgsqlDbType.Varchar)
-            { Direction = ParameterDirection.Output });
-            cmd.Parameters.Add(new NpgsqlParameter("role", NpgsqlDbType.Varchar)
-            { Direction = ParameterDirection.Output });
-            cmd.Parameters.Add(new NpgsqlParameter("displayname", NpgsqlDbType.Varchar)
-            { Direction = ParameterDirection.Output });
-            cmd.Parameters.Add(new NpgsqlParameter("bio", NpgsqlDbType.Varchar)
-            { Direction = ParameterDirection.Output });
-            cmd.Parameters.Add(new NpgsqlParameter("image", NpgsqlDbType.Varchar)
-            { Direction = ParameterDirection.Output });
-            cmd.Parameters.Add(new NpgsqlParameter("coins", NpgsqlDbType.Integer)
-            { Direction = ParameterDirection.Output });
+            NpgsqlDataReader? reader = null;
+            reader = cmd.ExecuteReader();
 
-
-            cmd.ExecuteNonQuery();
-
-            if (cmd.Parameters[4].Value is System.DBNull || cmd.Parameters[5].Value is System.DBNull || cmd.Parameters[6].Value is System.DBNull)
+            if (reader.Read())
             {
-                return new User(
-                    (string)cmd.Parameters[1].Value!,
-                    (string)cmd.Parameters[2].Value!,
-                    (string)cmd.Parameters[3].Value!);
-            }
-            else if (cmd.Parameters[1].Value != null &&
-                    cmd.Parameters[2].Value != null &&
-                    cmd.Parameters[3].Value != null &&
-                    cmd.Parameters[4].Value != null &&
-                    cmd.Parameters[5].Value != null &&
-                    cmd.Parameters[6].Value != null &&
-                    cmd.Parameters[7].Value != null)
+                User user = new User(reader.GetString(0), reader.GetString(1), reader.GetString(2));
 
-            {
-                return new User(
-                    (string)cmd.Parameters[1].Value!,
-                    (string)cmd.Parameters[2].Value!,
-                    (string)cmd.Parameters[3].Value!,
-                    (string)cmd.Parameters[4].Value!,
-                    (string)cmd.Parameters[5].Value!,
-                    (int)cmd.Parameters[6].Value!,
-                    (string)cmd.Parameters[7].Value!);
+                if (!reader.IsDBNull(3))
+                {
+                    user.Displayname = reader.GetString(3);
+                }
+                if (!reader.IsDBNull(4))
+                {
+                    user.Bio = reader.GetString(4);
+                }
+                if (!reader.IsDBNull(5))
+                {
+                    user.Image = reader.GetString(5);
+                }
+                if (!reader.IsDBNull(6))
+                {
+                    user.Coins = reader.GetInt32(6);
+                }
+                reader.Close();
+
+                return user;
             }
-           
+            reader.Close();
+
             return null;
         }
 
-        public static bool UpdateUserData(string username, Dictionary<string, string> data)
+        public static bool UpdateUserData(string request)
         {
+            string username = Helper.ExtractUsernameToken(request);
+            Dictionary<string, string> data = Helper.ExtractUserData(request);
+
             using var conn = DB.Connection();
 
             string displayname = data["Name"];

@@ -41,11 +41,11 @@ namespace MTCG
         {
             string statsStr = null;
 
-            statsStr += score.Username;
-            statsStr += score.Elo.ToString();
-            statsStr += score.Wins.ToString();
-            statsStr += score.Losses.ToString();
-            statsStr += score.Draws.ToString();
+            statsStr += "Username: " + score.Username + "\n\r";
+            statsStr += "Elo: " + score.Elo.ToString() + "\n\r";
+            statsStr += "Wins: " + score.Wins.ToString() + "\n\r";
+            statsStr += "Losses: " + score.Losses.ToString() + "\n\r";
+            statsStr += "Draws: " + score.Draws.ToString();
 
             SendMessage(stream, statsStr);
         }

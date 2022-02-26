@@ -11,8 +11,9 @@ namespace MTCG
 {
     class DBPackage
     {
-        public static bool AddPackage(List<Card> cards)
+        public static bool AddPackage(string request)
         {
+            List<Card> cards = Helper.ExtractCards(request);
             using var conn = DB.Connection();
             int packageID;
 
@@ -75,25 +76,26 @@ namespace MTCG
             return true; //must also return false if failed?
         }
 
-        public static bool AcquirePackage(string username)
+        public static bool AcquirePackage(string request)
         {
+            string username = Helper.ExtractUsernameToken(request);
             //check if player has enough money
 
             using var conn = DB.Connection();
 
             using var cmd = new NpgsqlCommand(
-                "SELECT MAX(packageID) FROM cardTable",
+                "SELECT MIN(packageID) FROM cardTable",
                 conn);
 
-            object max = cmd.ExecuteScalar();
+            object min = cmd.ExecuteScalar();
 
-            if (max is System.DBNull)
+            if (min is System.DBNull)
             {
                 //no more packages available
             }
             else
             {
-                int packageId = (int)max;
+                int packageId = (int)min;
 
                 using var cardUpdateCmd = new NpgsqlCommand(
                 "UPDATE cardTable " +

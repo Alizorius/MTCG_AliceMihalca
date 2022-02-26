@@ -10,8 +10,9 @@ namespace MTCG
 {
     class DBCard
     {
-        public static List<Card> GetAllUserCards(string username)
+        public static List<Card> GetAllUserCards(string request)
         {
+            string username = Helper.ExtractUsernameToken(request);
             using var conn = DB.Connection();
 
             using var cardQueryCmd = new NpgsqlCommand(
@@ -23,8 +24,9 @@ namespace MTCG
             return GetCards(cardQueryCmd, username);
         }
 
-        public static Deck GetDeck(string username) 
+        public static Deck GetDeck(string request) 
         {
+            string username = Helper.ExtractUsernameToken(request);
             using var conn = DB.Connection();
 
             using var cardQueryCmd = new NpgsqlCommand(
@@ -62,14 +64,14 @@ namespace MTCG
 
                     cards.Add(new Monster(
                         reader.GetString(0), reader.GetString(1), reader.GetDouble(2),
-                        elementType, monsterType, packageId, username, false
+                        elementType, monsterType, packageId, username, reader.GetBoolean(7)
                     ));
                 }
                 else
                 {
                     cards.Add(new Spell(
                         reader.GetString(0), reader.GetString(1), reader.GetDouble(2),
-                        elementType, packageId, username, false
+                        elementType, packageId, username, reader.GetBoolean(7)
                     ));
                 }
             }
@@ -85,8 +87,11 @@ namespace MTCG
             return cards;
         }
 
-        public static bool ConfigureDeck(string username, string[] cardIds)
+        public static bool ConfigureDeck(string request)
         {
+            string username = Helper.ExtractUsernameToken(request);
+            string[] cardIds = Helper.ExtractCardIds(request);
+
             using var conn = DB.Connection();
 
             //should fail if user doesnt have the cards 

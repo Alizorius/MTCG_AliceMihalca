@@ -28,7 +28,12 @@ namespace MTCG
             return "";
         }
 
-        public static string[] ExtractCardIds(string request) { return request.Split('"', ',', ' ', '/'); } // something doesnt work
+        public static string[] ExtractCardIds(string request) 
+        {
+            string[] stringSeparators = new string[] { "[\"", "\", \"", "\"]" };
+            return request.Substring(request.IndexOf('[')).Split(stringSeparators, StringSplitOptions.RemoveEmptyEntries); 
+        
+        }
 
         public static List<Card> ExtractCards(string request)
         {

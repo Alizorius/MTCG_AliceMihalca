@@ -19,6 +19,7 @@ namespace MTCG
         {
             if (_serverThread == null)
             {
+                DB.CreateDBIfNotPresent();
                 IPAddress ipAddress = new IPAddress(0);
                 _listener = new TcpListener(ipAddress, port);
                 _serverThread = new Thread(ServerHandler);
@@ -55,109 +56,117 @@ namespace MTCG
         void ServerHandler(Object o)
         {
             _listener.Start();
-            DB.CreateDBIfNotPresent();
             while (true)
             {
                 TcpClient client = _listener.AcceptTcpClient();
-                NetworkStream stream = client.GetStream();
+                Thread t = new Thread(() => requestThread(client));
+                t.Start();
+            }
+        }
 
-                try
+        void requestThread(TcpClient client)
+        {
+            
+            NetworkStream stream = client.GetStream();
+
+            try
+            {
+                var request = ReadRequest(stream);
+                bool format = false;
+
+                if (request.StartsWith("GET"))
                 {
-                    var request = ReadRequest(stream);
-                    bool format = false;
-
-                    if (request.StartsWith("GET"))
+                    if (request.Contains("/cards"))
                     {
-                        if (request.Contains("/cards"))
-                        {
-                            HttpResponse.SendCards(format, stream, DBCard.GetAllUserCards(Helper.ExtractUsernameToken(request)));
+                        HttpResponse.SendCards(format, stream, DBCard.GetAllUserCards(request));
 
-                        }
-                        else if (request.Contains("/deck"))
-                        {
-                            if (request.Contains("format=plain"))
-                            {
-                                format = true;
-                            }
-                            HttpResponse.SendCards(format, stream, DBCard.GetDeck(Helper.ExtractUsernameToken(request)));
-                        }
-                        else if (request.Contains("/users"))
-                        {
-                            if (Helper.ExtractUsername(request).Equals(Helper.ExtractUsernameToken(request)))
-                            {
-                                DBUser.GetUser(Helper.ExtractUsername(request));
-                            }
-                            //error
-                        }
-                        else if (request.Contains("/stats"))
-                        {
-                            HttpResponse.SendStats(stream, DBScore.GetStats(Helper.ExtractUsernameToken(request)));
-                        }
-                        else if (request.Contains("/score"))
-                        {
-                            HttpResponse.SendScoreboard(stream, DBScore.GetScoreBoard());
-                        }
-                        else if (request.Contains("/tradings"))
-                        {
-
-                        }
                     }
-                    else if (request.StartsWith("POST"))
+                    else if (request.Contains("/deck"))
                     {
-                        if (request.Contains("/users"))
+                        if (request.Contains("format=plain"))
                         {
-                            DBUser.AddUser(request);
+                            format = true;
                         }
-                        else if (request.Contains("/sessions"))
-                        {
-
-                        }
-                        else if (request.Contains("/transactions"))
-                        {
-                            DBPackage.AcquirePackage(Helper.ExtractUsernameToken(request));
-                        }
-                        else if (request.Contains("/packages"))
-                        {
-                            DBPackage.AddPackage(Helper.ExtractCards(request));
-                        }
-                        else if (request.Contains("/tradings"))
-                        {
-
-                        }
-                        else if (request.Contains("/battles"))
-                        {
-                            BattleRequests.AddRequestToPool(stream, Helper.ExtractUsernameToken(request));
-                        }
+                        HttpResponse.SendCards(format, stream, DBCard.GetDeck(request));
                     }
-                    else if (request.StartsWith("PUT"))
+                    else if (request.Contains("/users"))
                     {
-                        if (request.Contains("/deck"))
+                        if (Helper.ExtractUsername(request).Equals(Helper.ExtractUsernameToken(request)))
                         {
-                            DBCard.ConfigureDeck(Helper.ExtractUsernameToken(request), Helper.ExtractCardIds(request));
+                            DBUser.GetUser(request);
                         }
-                        else if (request.Contains("/users"))
-                        {
-                            if (Helper.ExtractUsername(request).Equals(Helper.ExtractUsernameToken(request)))
-                            {
-                                DBUser.UpdateUserData(Helper.ExtractUsernameToken(request), Helper.ExtractUserData(request));
-                            }
-                        }
+                        //error
                     }
-                    else if (request.StartsWith("DELETE"))
+                    else if (request.Contains("/stats"))
                     {
-                        if (request.Contains("/tradings"))
-                        {
-
-                        }
+                        HttpResponse.SendStats(stream, DBScore.GetStats(request));
                     }
-                    //else?
+                    else if (request.Contains("/score"))
+                    {
+                        HttpResponse.SendScoreboard(stream, DBScore.GetScoreBoard());
+                    }
+                    else if (request.Contains("/tradings"))
+                    {
 
+                    }
                 }
-                finally
+                else if (request.StartsWith("POST"))
                 {
-                    stream.Close();
-                    client.Close();
+                    if (request.Contains("/users"))
+                    {
+                        DBUser.AddUser(request);
+                        DBScore.SetDefaultStats(request);
+                    }
+                    else if (request.Contains("/sessions"))
+                    {
+
+                    }
+                    else if (request.Contains("/transactions"))
+                    {
+                        DBPackage.AcquirePackage(request);
+                    }
+                    else if (request.Contains("/packages"))
+                    {
+                        DBPackage.AddPackage(request);
+                    }
+                    else if (request.Contains("/tradings"))
+                    {
+
+                    }
+                    else if (request.Contains("/battles"))
+                    {
+                        BattleRequests.AddRequestToPool(stream, request);
+                        BattleRequests.startMatch(request);
+                    }
                 }
+                else if (request.StartsWith("PUT"))
+                {
+                    if (request.Contains("/deck"))
+                    {
+                        DBCard.ConfigureDeck(request);
+                    }
+                    else if (request.Contains("/users"))
+                    {
+                        if (Helper.ExtractUsername(request).Equals(Helper.ExtractUsernameToken(request)))
+                        {
+                            DBUser.UpdateUserData(request);
+                        }
+                    }
+                }
+                else if (request.StartsWith("DELETE"))
+                {
+                    if (request.Contains("/tradings"))
+                    {
+
+                    }
+                }
+                //else?
+
+            }
+            finally
+            {
+                stream.Close();
+                client.Close();
             }
         }
     }
