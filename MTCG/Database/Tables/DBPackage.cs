@@ -78,7 +78,14 @@ namespace MTCG
 
         public static bool AcquirePackage(string request)
         {
-            string username = Helper.ExtractUsernameToken(request);
+            //string username = Helper.ExtractUsernameToken(request); ??? do i need this?
+            
+            User user = DBUser.GetUser(request);
+
+            //if(user.Coins < 5)
+            //{
+                
+            //}
             //check if player has enough money
 
             using var conn = DB.Connection();
@@ -101,7 +108,7 @@ namespace MTCG
                 "UPDATE cardTable " +
                 "SET username = @p1, packageID = NULL WHERE packageID = @p2",
                 conn);
-                cardUpdateCmd.Parameters.AddWithValue("p1", username);
+                cardUpdateCmd.Parameters.AddWithValue("p1", user.Username);
                 cardUpdateCmd.Parameters[0].NpgsqlDbType = NpgsqlDbType.Varchar;
                 cardUpdateCmd.Parameters.AddWithValue("p2", packageId);
                 cardUpdateCmd.Parameters[1].NpgsqlDbType = NpgsqlDbType.Integer;

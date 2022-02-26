@@ -8,7 +8,7 @@ using ClientTuple = System.Tuple<System.Net.Sockets.NetworkStream, string>;
 
 namespace MTCG
 {
-    class Battle
+    public class Battle
     {
         public string battleLog = "";
 
@@ -25,13 +25,15 @@ namespace MTCG
                 Card card1 = deck1.GetRndCard();
                 Card card2 = deck2.GetRndCard();
 
+                battleLog += card1.Name + " from " + deck1.Username + " is fighting " + card2.Name + " from " + deck2.Username + "\n\r\n\r.";
+
                 switch (CardBattle(card1, card2))
                 {
                     case 2:
-                        battleLog += deck2.Username + " won this Round. (You gain your oponents card in your deck)\n\r";
+                        battleLog += deck2.Username + " won this Round. (You gain " + card1.Name + " from your oponents deck)\n\r\n\r";
                         if (deck1.GetSize().Equals(1))
                         {
-                            battleLog += deck2.Username + " wins this Game!\n\r";
+                            battleLog += deck2.Username + " wins this Game!\n\r\n\r";
                             
                             scoreUser1.Elo -= 5;
                             scoreUser1.Losses += 1;
@@ -52,10 +54,10 @@ namespace MTCG
                         break;
 
                     case 1:
-                        battleLog += deck1.Username + " won this Round. (You gain your oponents card in your deck)\n\r";
+                        battleLog += deck1.Username + " won this Round. (You gain " + card2.Name + " from your oponents deck)\n\r\n\r";
                         if (deck2.GetSize().Equals(1))
                         {
-                            battleLog += deck1.Username + " wins this Game!\n\r";
+                            battleLog += deck1.Username + " wins this Game!\n\r\n\r";
 
                             scoreUser1.Elo += 3;
                             scoreUser1.Wins += 1;
@@ -76,7 +78,7 @@ namespace MTCG
                         break;
 
                     case 0:
-                        battleLog += "Its a draw this Round.\n\r";
+                        battleLog += "Its a draw this Round.\n\r\n\r";
                         break;
                     default:
                         break;

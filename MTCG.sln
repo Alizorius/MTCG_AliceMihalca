@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31410.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MTCG", "MTCG\MTCG.csproj", "{96909E8C-775E-4B8B-8DE9-2A981C7E40B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MTCG", "MTCG\MTCG.csproj", "{96909E8C-775E-4B8B-8DE9-2A981C7E40B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MTCG.Test", "MTCG.Test\MTCG.Test.csproj", "{2447D498-3BD1-4E97-AC6B-2AD0BBF6D6CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{96909E8C-775E-4B8B-8DE9-2A981C7E40B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96909E8C-775E-4B8B-8DE9-2A981C7E40B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96909E8C-775E-4B8B-8DE9-2A981C7E40B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2447D498-3BD1-4E97-AC6B-2AD0BBF6D6CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2447D498-3BD1-4E97-AC6B-2AD0BBF6D6CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2447D498-3BD1-4E97-AC6B-2AD0BBF6D6CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2447D498-3BD1-4E97-AC6B-2AD0BBF6D6CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

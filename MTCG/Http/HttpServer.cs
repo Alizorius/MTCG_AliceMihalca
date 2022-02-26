@@ -66,7 +66,6 @@ namespace MTCG
 
         void requestThread(TcpClient client)
         {
-            
             NetworkStream stream = client.GetStream();
 
             try

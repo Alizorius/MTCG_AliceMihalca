@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 //returns 0 sind nicht sehr ausgabefähig, entweder enum oder variable mit namen returnen um zu wissen worum es da geht
 //C# convention - alle methoden werden mit großen buchstaben angefangen
 
-enum ElementType
+public enum ElementType
 {
     Fire,
     Water,
     Normal
 }
 
-enum MonsterType
+public enum MonsterType
 {
     Goblin,
     Dragon,
@@ -29,7 +29,7 @@ enum MonsterType
 
 namespace MTCG
 {
-    abstract class Card
+    abstract public class Card
     {
         public string Id { get; set; }
         public string Name { get; set; }
@@ -115,7 +115,7 @@ namespace MTCG
         }
     }
 
-    class Spell : Card 
+    public class Spell : Card 
     {
         [JsonConstructor]
         public Spell(string name, double damage, ElementType elementType) : base(name, damage, elementType) { }
@@ -148,7 +148,7 @@ namespace MTCG
         }
     }
 
-    class Monster : Card
+    public class Monster : Card
     {
         public MonsterType MonsterType { get; set; }
 
