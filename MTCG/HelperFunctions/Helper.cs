@@ -17,6 +17,10 @@ namespace MTCG
 
         public static string ExtractUsernameToken(string request)
         {
+            if (!request.Contains("Authorization"))
+            {
+                return "";
+            }
             string[] subs = request.Split(' ', '-');
             for (int i = 0; i < subs.Length; i++)
             {

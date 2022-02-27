@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MTCG.Http;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MTCG
+namespace MTCG.Http
 {
     class HttpServer
     {
@@ -67,106 +68,89 @@ namespace MTCG
         void requestThread(TcpClient client)
         {
             NetworkStream stream = client.GetStream();
-
+            string response = "Error: Tasks can't be processed!\n\r";
             try
             {
                 var request = ReadRequest(stream);
-                bool format = false;
 
-                if (request.StartsWith("GET"))
+                //GET
+                if (request.StartsWith("GET") && request.Contains("/cards"))
                 {
-                    if (request.Contains("/cards"))
-                    {
-                        HttpResponse.SendCards(format, stream, DBCard.GetAllUserCards(request));
-
-                    }
-                    else if (request.Contains("/deck"))
-                    {
-                        if (request.Contains("format=plain"))
-                        {
-                            format = true;
-                        }
-                        HttpResponse.SendCards(format, stream, DBCard.GetDeck(request));
-                    }
-                    else if (request.Contains("/users"))
-                    {
-                        if (Helper.ExtractUsername(request).Equals(Helper.ExtractUsernameToken(request)))
-                        {
-                            DBUser.GetUser(request);
-                        }
-                        //error
-                    }
-                    else if (request.Contains("/stats"))
-                    {
-                        HttpResponse.SendStats(stream, DBScore.GetStats(request));
-                    }
-                    else if (request.Contains("/score"))
-                    {
-                        HttpResponse.SendScoreboard(stream, DBScore.GetScoreBoard());
-                    }
-                    else if (request.Contains("/tradings"))
-                    {
-
-                    }
+                    response = HttpRequestHandler.GetCardsRequest(request);
                 }
-                else if (request.StartsWith("POST"))
+                else if (request.StartsWith("GET") && request.Contains("/deck"))
                 {
-                    if (request.Contains("/users"))
-                    {
-                        DBUser.AddUser(request);
-                        DBScore.SetDefaultStats(request);
-                    }
-                    else if (request.Contains("/sessions"))
-                    {
-
-                    }
-                    else if (request.Contains("/transactions"))
-                    {
-                        DBPackage.AcquirePackage(request);
-                    }
-                    else if (request.Contains("/packages"))
-                    {
-                        DBPackage.AddPackage(request);
-                    }
-                    else if (request.Contains("/tradings"))
-                    {
-
-                    }
-                    else if (request.Contains("/battles"))
-                    {
-                        BattleRequests.AddRequestToPool(stream, request);
-                        BattleRequests.startMatch(request);
-                    }
+                    response = HttpRequestHandler.GetDeckRequest(request);
                 }
-                else if (request.StartsWith("PUT"))
+                else if (request.StartsWith("GET") && request.Contains("/users"))
                 {
-                    if (request.Contains("/deck"))
-                    {
-                        DBCard.ConfigureDeck(request);
-                    }
-                    else if (request.Contains("/users"))
-                    {
-                        if (Helper.ExtractUsername(request).Equals(Helper.ExtractUsernameToken(request)))
-                        {
-                            DBUser.UpdateUserData(request);
-                        }
-                    }
+                    response = HttpRequestHandler.GetUsersRequest(request);
                 }
-                else if (request.StartsWith("DELETE"))
+                else if (request.StartsWith("GET") && request.Contains("/stats"))
                 {
-                    if (request.Contains("/tradings"))
-                    {
-
-                    }
+                    response = HttpRequestHandler.GetStatsRequest(request);
                 }
-                //else?
+                else if (request.StartsWith("GET") && request.Contains("/score"))
+                {
+                    response = HttpRequestHandler.GetScoreRequest(request);
+                }
+                else if (request.StartsWith("GET") && request.Contains("/tradings"))
+                {
+                    //not implemented
+                }
+
+                //POST
+                else if (request.StartsWith("POST") && request.Contains("/users"))
+                {
+                    response = HttpRequestHandler.PostUsersRequest(request);
+                }
+                else if (request.StartsWith("POST") && request.Contains("/sessions"))
+                {
+                    //not implemented
+                }
+                else if (request.StartsWith("POST") && request.Contains("/transactions"))
+                {
+                    response = HttpRequestHandler.PostTransactionsRequest(request);
+                }
+                else if (request.StartsWith("POST") && request.Contains("/packages"))
+                {
+                    response = HttpRequestHandler.PostPackagesRequest(request);
+                }
+                else if (request.StartsWith("POST") && request.Contains("/tradings"))
+                {
+                    //not implemented
+                }
+                else if (request.StartsWith("POST") && request.Contains("/battles"))
+                {
+                    HttpRequestHandler.PostBattlesRequest(stream, request);
+                    response = "Battle finished!\n\r";
+                }
+
+                //PUT
+                else if (request.StartsWith("PUT") && request.Contains("/deck"))
+                {
+                    response = HttpRequestHandler.PutDeckRequest(request);
+                }
+                else if (request.StartsWith("PUT") && request.Contains("/users"))
+                {
+                    response = HttpRequestHandler.PutUsersRequest(request);
+                }
+
+                //DELETE
+                else if (request.StartsWith("DELETE") && request.Contains("/tradings"))
+                {
+                    //not implemented
+                }
 
             }
             finally
             {
+                HttpResponse.SendMessage(stream, response);
                 stream.Close();
                 client.Close();
             }
         }
+
+
     }
 }

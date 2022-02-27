@@ -24,9 +24,8 @@ namespace MTCG
             return GetCards(cardQueryCmd, username);
         }
 
-        public static Deck GetDeck(string request) 
+        public static Deck GetDeckFromUsername(string username)
         {
-            string username = Helper.ExtractUsernameToken(request);
             using var conn = DB.Connection();
 
             using var cardQueryCmd = new NpgsqlCommand(
@@ -35,7 +34,17 @@ namespace MTCG
             cardQueryCmd.Parameters.AddWithValue("p1", username);
             cardQueryCmd.Parameters[0].NpgsqlDbType = NpgsqlDbType.Varchar;
 
+            if (GetCards(cardQueryCmd, username).Count() == 0)
+            {
+                return null;
+            }
             return new Deck(GetCards(cardQueryCmd, username), username);
+        }
+
+        public static Deck GetDeck(string request) 
+        {
+            string username = Helper.ExtractUsernameToken(request);
+            return GetDeckFromUsername(username);
         }
 
         private static List<Card> GetCards(NpgsqlCommand cardQueryCmd, string username)
@@ -76,14 +85,6 @@ namespace MTCG
                 }
             }
             reader.Close();
-
-            if (cards == null)
-            {
-                //if no cards available under the given conditions
-                return null;
-                //error handling
-            }
-
             return cards;
         }
 
@@ -94,10 +95,29 @@ namespace MTCG
 
             using var conn = DB.Connection();
 
-            //should fail if user doesnt have the cards 
-            //or card number lower (or higher?) than 4
+            if(cardIds.Length < 4)
+            {
+                return false;
+            }
 
+            List<Card> cards = GetAllUserCards(request);
             foreach(var Id in cardIds)
+            {
+                if (!cards.Exists(c => c.Id == Id))
+                {
+                    return false;
+                }
+            }
+
+            using var cmd = new NpgsqlCommand(
+                "UPDATE cardTable " +
+                "SET deck = false WHERE username = @p1",
+                conn);
+            cmd.Parameters.AddWithValue("p1", username);
+            cmd.Parameters[0].NpgsqlDbType = NpgsqlDbType.Varchar;
+            cmd.ExecuteNonQuery();
+
+            foreach (var Id in cardIds)
             {
                 using var cardUpdateCmd = new NpgsqlCommand(
                 "UPDATE cardTable " +
@@ -110,7 +130,6 @@ namespace MTCG
 
                 cardUpdateCmd.ExecuteNonQuery();
             }
-
             return true;
         }
     }

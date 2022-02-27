@@ -35,6 +35,11 @@ namespace MTCG
         public static Score GetStats(string request)
         {
             string username = Helper.ExtractUsernameToken(request);
+            return GetStatsFromUsername(username);
+        }
+
+        public static Score GetStatsFromUsername(string username)
+        {
             using var conn = DB.Connection();
 
             using var cmd = new NpgsqlCommand(

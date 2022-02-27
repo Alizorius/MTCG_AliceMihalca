@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MTCG.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,18 +15,18 @@ namespace MTCG
 
         public void DeckBattle(ClientTuple client1, ClientTuple client2)
         {
-            Deck deck1 = DBCard.GetDeck(client1.Item2);
-            Deck deck2 = DBCard.GetDeck(client2.Item2);
+            Deck deck1 = DBCard.GetDeckFromUsername(client1.Item2);
+            Deck deck2 = DBCard.GetDeckFromUsername(client2.Item2);
 
-            Score scoreUser1 = DBScore.GetStats(deck1.Username);
-            Score scoreUser2 = DBScore.GetStats(deck2.Username);
+            Score scoreUser1 = DBScore.GetStatsFromUsername(deck1.Username);
+            Score scoreUser2 = DBScore.GetStatsFromUsername(deck2.Username);
 
             for (int i = 0; i < 100; i++)
             {
                 Card card1 = deck1.GetRndCard();
                 Card card2 = deck2.GetRndCard();
 
-                battleLog += card1.Name + " from " + deck1.Username + " is fighting " + card2.Name + " from " + deck2.Username + "\n\r\n\r.";
+                battleLog += card1.Name + " from " + deck1.Username + " is fighting " + card2.Name + " from " + deck2.Username + ".\n\r\n\r";
 
                 switch (CardBattle(card1, card2))
                 {

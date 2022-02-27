@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MTCG
+namespace MTCG.Http
 {
     static class HttpResponse
     {
@@ -15,12 +15,12 @@ namespace MTCG
             stream.Write(msg, 0, msg.Length);
         }
 
-        public static void SendCards(bool plainFormat, NetworkStream stream, Deck deck)
+        public static string CardsResponseMsg(bool plainFormat, Deck deck)
         {
-            SendCards(plainFormat, stream, deck.DeckList);
+            return CardsResponseMsg(plainFormat, deck.DeckList);
         }
 
-        public static void SendCards(bool plainFormat, NetworkStream stream, List<Card> cards)
+        public static string CardsResponseMsg(bool plainFormat, List<Card> cards)
         {
             string cardsStr = null;
             foreach(var card in cards)
@@ -34,10 +34,34 @@ namespace MTCG
                     cardsStr += card.CardToString();
                 }
             }
-            SendMessage(stream, cardsStr);
+            return cardsStr;
         }
 
-        public static void SendStats(NetworkStream stream, Score score)
+        public static string UserResponseMsg(User user)
+        {
+            string userStr = null;
+
+            userStr += "Username: " + user.Username + "\n\r";
+
+            if(!(user.Displayname is null))
+            {
+                userStr += "Displayname: " + user.Displayname + "\n\r";
+            }
+            if (!(user.Bio is null))
+            {
+                userStr += "Bio: " + user.Bio + "\n\r";
+            }
+            if (!(user.Image is null))
+            {
+                userStr += "Image: " + user.Image + "\n\r";
+            }
+
+            userStr += "Coins: " + user.Coins.ToString();
+
+            return userStr;
+        }
+
+        public static string StatsResponseMsg(Score score)
         {
             string statsStr = null;
 
@@ -47,10 +71,10 @@ namespace MTCG
             statsStr += "Losses: " + score.Losses.ToString() + "\n\r";
             statsStr += "Draws: " + score.Draws.ToString();
 
-            SendMessage(stream, statsStr);
+            return statsStr;
         }
 
-        public static void SendScoreboard(NetworkStream stream, List<Score> scores)
+        public static string ScoreboardResponseMsg(List<Score> scores)
         {
             string scoreStr = null;
             foreach (var score in scores)
@@ -62,7 +86,8 @@ namespace MTCG
                 //scoreStr += "Draws: " + score.Draws.ToString();
                 scoreStr += "\n\r";
             }
-            SendMessage(stream, scoreStr);
+
+            return scoreStr;
         }
     }
 }

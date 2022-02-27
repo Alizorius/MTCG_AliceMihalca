@@ -48,9 +48,8 @@ namespace MTCG
             return false;
         }
 
-        public static User GetUser(string request)
+        public static User GetUser(string username)
         {
-            string username = Helper.ExtractUsername(request);
             using var conn = DB.Connection();
 
             using var cmd = new NpgsqlCommand(

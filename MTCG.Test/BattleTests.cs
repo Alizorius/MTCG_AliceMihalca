@@ -23,7 +23,7 @@ namespace MTCG.Test
         }
 
         [Test]
-        public void Test()
+        public void KrakenAgainstSpellTest()
         {
             Spell strongSpell = new Spell("StrongSpell", 100, ElementType.Normal);
             Monster kraken = new Monster("Kraken", 20, ElementType.Normal, MonsterType.Kraken);
