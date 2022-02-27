@@ -73,6 +73,23 @@ namespace MTCG.Http
             {
                 var request = ReadRequest(stream);
 
+                //Do not require the User to be logged in
+                if (request.StartsWith("POST") && request.Contains("/users"))
+                {
+                    response = HttpRequestHandler.PostUsersRequest(request);
+                    return;
+                }
+                else if (request.StartsWith("POST") && request.Contains("/sessions"))
+                {
+                    response = HttpRequestHandler.PostSessionsRequest(request);
+                    return;
+                }
+
+                if (!HttpRequestHandler.UserLoggedInCheck(request))
+                {
+                    response = "Command can't be processed! You must log in first.\n\r";
+                    return;
+                }
                 //GET
                 if (request.StartsWith("GET") && request.Contains("/cards"))
                 {
@@ -92,22 +109,14 @@ namespace MTCG.Http
                 }
                 else if (request.StartsWith("GET") && request.Contains("/score"))
                 {
-                    response = HttpRequestHandler.GetScoreRequest(request);
+                    response = HttpRequestHandler.GetScoreRequest();
                 }
                 else if (request.StartsWith("GET") && request.Contains("/tradings"))
                 {
-                    //not implemented
+                    response = HttpRequestHandler.GetTradingsRequest();
                 }
 
                 //POST
-                else if (request.StartsWith("POST") && request.Contains("/users"))
-                {
-                    response = HttpRequestHandler.PostUsersRequest(request);
-                }
-                else if (request.StartsWith("POST") && request.Contains("/sessions"))
-                {
-                    //not implemented
-                }
                 else if (request.StartsWith("POST") && request.Contains("/transactions"))
                 {
                     response = HttpRequestHandler.PostTransactionsRequest(request);
@@ -116,9 +125,13 @@ namespace MTCG.Http
                 {
                     response = HttpRequestHandler.PostPackagesRequest(request);
                 }
+                else if (request.StartsWith("POST") && request.Contains("/tradings/"))
+                {
+                    response = HttpRequestHandler.PostAcceptTradeRequest(request);
+                }
                 else if (request.StartsWith("POST") && request.Contains("/tradings"))
                 {
-                    //not implemented
+                    response = HttpRequestHandler.PostTradingsRequest(request);
                 }
                 else if (request.StartsWith("POST") && request.Contains("/battles"))
                 {
@@ -139,8 +152,9 @@ namespace MTCG.Http
                 //DELETE
                 else if (request.StartsWith("DELETE") && request.Contains("/tradings"))
                 {
-                    //not implemented
+                    response = HttpRequestHandler.DeleteTradingsRequest(request);
                 }
+
 
             }
             finally

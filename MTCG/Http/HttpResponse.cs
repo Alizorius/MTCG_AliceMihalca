@@ -23,7 +23,7 @@ namespace MTCG.Http
         public static string CardsResponseMsg(bool plainFormat, List<Card> cards)
         {
             string cardsStr = null;
-            foreach(var card in cards)
+            foreach (var card in cards)
             {
                 if (plainFormat)
                 {
@@ -43,7 +43,7 @@ namespace MTCG.Http
 
             userStr += "Username: " + user.Username + "\n\r";
 
-            if(!(user.Displayname is null))
+            if (!(user.Displayname is null))
             {
                 userStr += "Displayname: " + user.Displayname + "\n\r";
             }
@@ -86,8 +86,20 @@ namespace MTCG.Http
                 //scoreStr += "Draws: " + score.Draws.ToString();
                 scoreStr += "\n\r";
             }
-
             return scoreStr;
+        }
+
+        public static string DealsResponseMsg(List<Deal> deals)
+        {
+            string dealsStr = null;
+            foreach (var deal in deals)
+            {
+                dealsStr += "Deal-ID: " + deal.Id + ", ";
+                dealsStr += "Card to Trade: " + deal.CardToTrade + ", ";
+                dealsStr += "Type-Requirement: " + deal.Type + ", ";
+                dealsStr += "Minimum-Damage: " + deal.MinimumDamage + "\n\r";
+            }
+            return dealsStr;
         }
     }
 }

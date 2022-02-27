@@ -129,5 +129,14 @@ namespace MTCG
             Dictionary<string, string> data = JsonConvert.DeserializeObject<Dictionary<string, string>>(userData);
             return data;
         }
+
+        public static Deal ExtractTradingDeal(string request) { return JsonConvert.DeserializeObject<Deal>(request.Substring(request.IndexOf('{'))); }
+    
+        public static string ExtractDealId(string request) { return request.Split(' ', '/')[3]; }
+    
+        public static string ExtractTradingCardId(string request)
+        {
+            return request.Substring(request.IndexOf('\"')).Trim('"');
+        }
     }
 }

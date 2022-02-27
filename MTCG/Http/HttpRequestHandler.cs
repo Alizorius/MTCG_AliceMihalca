@@ -40,7 +40,7 @@ namespace MTCG.Http
             {
                 return "Task Failed: User and User-Token don't match!\n\r";
             }
-            return HttpResponse.UserResponseMsg(DBUser.GetUser(Helper.ExtractUsername(request)));
+            return HttpResponse.UserResponseMsg(DBUser.GetUserByUsername(Helper.ExtractUsername(request)));
         }
 
         public static string GetStatsRequest(string request)
@@ -48,9 +48,18 @@ namespace MTCG.Http
             return HttpResponse.StatsResponseMsg(DBScore.GetStats(request));
         }
 
-        public static string GetScoreRequest(string request)
+        public static string GetScoreRequest()
         {
             return HttpResponse.ScoreboardResponseMsg(DBScore.GetScoreBoard());
+        }
+
+        public static string GetTradingsRequest()
+        {
+            if(DBTrade.GetAllDeals().Count() == 0)
+            {
+                return "Task Failed: There are currently no deals available!\n\r";
+            }
+            return HttpResponse.DealsResponseMsg(DBTrade.GetAllDeals());
         }
 
         //POST
@@ -62,6 +71,15 @@ namespace MTCG.Http
                 return "User was successfully added!\n\r";
             }
             return "Task Failed: User can't be added, this User might already exist!\n\r";
+        }
+
+        public static string PostSessionsRequest(string request)
+        {
+            if (DBUser.LoginUser(Helper.ExtractUser(request).Username))
+            {
+                return "You logged in successfully!\n\r";
+            }
+            return "Task failed: Login didn't work!";
         }
 
         public static string PostTransactionsRequest(string request)
@@ -90,6 +108,25 @@ namespace MTCG.Http
             BattleRequests.startMatch(request);
         }
 
+        public static string PostAcceptTradeRequest(string request)
+        {
+            if (DBTrade.AcceptTradingDeal(request))
+            {
+                return "Trade was successful!\n\r";
+            }
+            return "Task Failed: Possible reasons\n\r - You might try to trade a card that doesn't belong to you.\n\r" +
+                "- You can't trade cards on your own deal.\n\r";
+        }
+
+        public static string PostTradingsRequest(string request)
+        {
+            if (DBTrade.AddTradingDeal(request))
+            {
+                return "Trading Deal was successfully added!\n\r";
+            }
+            return "Task Failed: You either don't own this card or this card is currently used in your deck!\n\r";
+        }
+
         //PUT
         public static string PutDeckRequest(string request)
         {
@@ -115,6 +152,16 @@ namespace MTCG.Http
             return "You successfully edited your profile!\n\r";
         }
 
+        //DELETE
+        public static string DeleteTradingsRequest(string request)
+        {
+            if (DBTrade.DeleteTradingDeal(Helper.ExtractDealId(request)))
+            {
+                return "Deal was successfully deleted!\n\r";
+            }
+            return "Task Failed: Deal couldn't be deleted!\n\r";
+        }
+
         //Verification
         private static bool CheckIfTokenExists(string request)
         {
@@ -132,6 +179,11 @@ namespace MTCG.Http
         private static bool VerifyAdmin(string request)
         {
             return Helper.ExtractUsernameToken(request).Equals("admin");
+        }
+
+        public static bool UserLoggedInCheck(string request)
+        {
+            return DBUser.LoggedInCheck(Helper.ExtractUsernameToken(request));
         }
     }
 }

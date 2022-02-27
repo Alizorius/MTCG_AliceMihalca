@@ -73,12 +73,12 @@ namespace MTCG
                 cardCmd.ExecuteNonQuery();
             }
 
-            return true; //must also return false if failed?
+            return true;
         }
 
         public static bool AcquirePackage(string request)
         {
-            User user = DBUser.GetUser(Helper.ExtractUsernameToken(request));
+            User user = DBUser.GetUserByUsername(Helper.ExtractUsernameToken(request));
 
             if (user.Coins < 5)
             {

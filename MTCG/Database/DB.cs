@@ -58,6 +58,7 @@ namespace MTCG
                 bio VARCHAR(256),
                 image VARCHAR(256),
                 coins INTEGER NOT NULL,
+                isLoggedIn BOOLEAN,
                 PRIMARY KEY(username)
                 )", conn))
             {
@@ -99,8 +100,22 @@ namespace MTCG
                 cmd.ExecuteNonQuery();
             }
 
-            conn.Close();
+            using (var cmd = new NpgsqlCommand(@"
+                CREATE TABLE IF NOT EXISTS tradingTable(
+                id VARCHAR(256) NOT NULL,
+                cardId VARCHAR(256) NOT NULL,
+                type VARCHAR(256) NOT NULL,
+                minDamage INTEGER NOT NULL,
+                PRIMARY KEY(id),
+                CONSTRAINT fk_id
+                    FOREIGN KEY(cardId)
+                        REFERENCES cardTable(id)
+                )", conn))
+            {
+                cmd.ExecuteNonQuery();
+            }
 
+            conn.Close();
         }
 
         public static NpgsqlConnection Connection()

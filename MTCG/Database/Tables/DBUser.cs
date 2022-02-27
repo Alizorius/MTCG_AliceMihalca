@@ -16,20 +16,23 @@ namespace MTCG
         public static bool AddUser(string request)
         {
             User user = Helper.ExtractUser(request);
+            if (user.Username.Equals("admin"))
+            {
+                user.Role = Role.Admin;
+            }
 
             string pattern = "[a-zA-Z0-9]{5,11}";
             Regex defaultRegex = new Regex(pattern);
 
             if (defaultRegex.IsMatch(user.Username))
             {
-                if (GetUser(user.Username) == null)
+                if (GetUserByUsername(user.Username) == null)
                 {
                     using var conn = DB.Connection();
 
-                    //error handling
                     using var userTableCmd = new NpgsqlCommand(
-                            "INSERT INTO userTable (username, password, role, displayname, bio, image, coins) " +
-                            "VALUES(@p1, @p2, @p3, @p4, @p5, @p6, @p7)",
+                            "INSERT INTO userTable (username, password, role, displayname, bio, image, coins, isLoggedIn) " +
+                            "VALUES(@p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)",
                             conn);
 
                     userTableCmd.Parameters.AddWithValue("p1", NpgsqlDbType.Varchar, user.Username);
@@ -39,6 +42,7 @@ namespace MTCG
                     userTableCmd.Parameters.AddWithValue("p5", NpgsqlDbType.Varchar, DBNull.Value);
                     userTableCmd.Parameters.AddWithValue("p6", NpgsqlDbType.Varchar, DBNull.Value);
                     userTableCmd.Parameters.AddWithValue("p7", NpgsqlDbType.Integer, user.Coins);
+                    userTableCmd.Parameters.AddWithValue("p8", NpgsqlDbType.Boolean, false);
 
                     userTableCmd.ExecuteNonQuery();
 
@@ -48,7 +52,72 @@ namespace MTCG
             return false;
         }
 
-        public static User GetUser(string username)
+        public static bool LoginUser(string username)
+        {
+            User user = GetUserByUsername(username);
+            if (user != null)
+            {
+                using var conn = DB.Connection();
+
+                using var userUpdateCmd = new NpgsqlCommand(
+                "UPDATE userTable " +
+                "SET isLoggedIn = true WHERE username = @p1 AND password = @p2",
+                conn);
+                userUpdateCmd.Parameters.AddWithValue("p1", username);
+                userUpdateCmd.Parameters[0].NpgsqlDbType = NpgsqlDbType.Varchar;
+                userUpdateCmd.Parameters.AddWithValue("p2", user.Password);
+                userUpdateCmd.Parameters[1].NpgsqlDbType = NpgsqlDbType.Varchar;
+                userUpdateCmd.ExecuteNonQuery();
+                return true;
+            }
+            return false;
+        }
+
+        public static bool LoggedInCheck(string username)
+        {
+            using var conn = DB.Connection();
+
+            using var cmd = new NpgsqlCommand(
+                    "SELECT isLoggedIn FROM userTable WHERE username = @p1",
+                    conn);
+            cmd.Parameters.AddWithValue("p1", username);
+            cmd.Parameters[0].NpgsqlDbType = NpgsqlDbType.Varchar;
+
+            NpgsqlDataReader? reader = cmd.ExecuteReader();
+
+            if (reader.Read())
+            {
+                bool checkLogin = reader.GetBoolean(0);
+                reader.Close();
+                return checkLogin;
+            }
+            reader.Close();
+            return false;
+        }
+
+        public static string GetUsernamebyCardId(string cardId)
+        {
+            using var conn = DB.Connection();
+
+            using var cmd = new NpgsqlCommand(
+                    "SELECT username FROM cardTable WHERE id = @p1",
+                    conn);
+            cmd.Parameters.AddWithValue("p1", cardId);
+            cmd.Parameters[0].NpgsqlDbType = NpgsqlDbType.Varchar;
+
+            NpgsqlDataReader? reader = cmd.ExecuteReader();
+
+            if(reader.Read())
+            {
+                string username = reader.GetString(0);
+                reader.Close();
+                return username;
+            }
+            reader.Close();
+            return null;
+        }
+
+        public static User GetUserByUsername(string username)
         {
             using var conn = DB.Connection();
 

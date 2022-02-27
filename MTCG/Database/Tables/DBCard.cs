@@ -41,10 +41,29 @@ namespace MTCG
             return new Deck(GetCards(cardQueryCmd, username), username);
         }
 
-        public static Deck GetDeck(string request) 
+        public static Deck GetDeck(string request)
         {
             string username = Helper.ExtractUsernameToken(request);
             return GetDeckFromUsername(username);
+        }
+
+        public static Card GetCardById(string cardId, string username)
+        {
+            using var conn = DB.Connection();
+
+            using var cardQueryCmd = new NpgsqlCommand(
+                "SELECT * from cardTable WHERE id = @p1 AND username = @p2 LIMIT 1",
+                conn);
+            cardQueryCmd.Parameters.AddWithValue("p1", cardId);
+            cardQueryCmd.Parameters[0].NpgsqlDbType = NpgsqlDbType.Varchar;
+            cardQueryCmd.Parameters.AddWithValue("p2", username);
+            cardQueryCmd.Parameters[1].NpgsqlDbType = NpgsqlDbType.Varchar;
+
+            if(GetCards(cardQueryCmd, username).Count() == 0)
+            {
+                return null;
+            }
+            return GetCards(cardQueryCmd, username).ElementAt(0);
         }
 
         private static List<Card> GetCards(NpgsqlCommand cardQueryCmd, string username)
@@ -95,13 +114,13 @@ namespace MTCG
 
             using var conn = DB.Connection();
 
-            if(cardIds.Length < 4)
+            if (cardIds.Length < 4)
             {
                 return false;
             }
 
             List<Card> cards = GetAllUserCards(request);
-            foreach(var Id in cardIds)
+            foreach (var Id in cardIds)
             {
                 if (!cards.Exists(c => c.Id == Id))
                 {
