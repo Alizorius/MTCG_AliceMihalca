@@ -8,11 +8,15 @@ using System.Threading.Tasks;
 
 namespace MTCG
 {
-    class DBCard
+    public class DBCard
     {
         public static List<Card> GetAllUserCards(string request)
         {
-            string username = Helper.ExtractUsernameToken(request);
+            return GetAllUserCards(Helper.ExtractUsernameToken(request));
+        }
+
+        public static List<Card> GetAllUserCardsByUsername(string username)
+        {
             using var conn = DB.Connection();
 
             using var cardQueryCmd = new NpgsqlCommand(
@@ -151,5 +155,39 @@ namespace MTCG
             }
             return true;
         }
+
+        public static bool AddSingleSpellCard(Spell spell)
+        {
+            using var conn = DB.Connection();
+
+            using var cardTableCmd = new NpgsqlCommand(
+                "INSERT INTO cardTable (id, cardname, damage, elementType, packageId, username, deck) " +
+                "VALUES(@p1, @p2, @p3, @p4, @p5, @p6, @p7)",
+                conn);
+
+            cardTableCmd.Parameters.AddWithValue("p1", NpgsqlDbType.Varchar, spell.Id);
+            cardTableCmd.Parameters.AddWithValue("p2", NpgsqlDbType.Varchar, spell.Name);
+            cardTableCmd.Parameters.AddWithValue("p3", NpgsqlDbType.Double, spell.Damage);
+            cardTableCmd.Parameters.AddWithValue("p4", NpgsqlDbType.Varchar, spell.ElementType.ToString());
+            cardTableCmd.Parameters.AddWithValue("p5", NpgsqlDbType.Integer, spell.PackageId);
+            cardTableCmd.Parameters.AddWithValue("p6", NpgsqlDbType.Varchar, spell.Username);
+            cardTableCmd.Parameters.AddWithValue("p7", NpgsqlDbType.Boolean, spell.InDeck);
+            
+            cardTableCmd.ExecuteNonQuery();
+
+            return true;
+        }
+
+        public static void DeleteCardById(string cardId)
+        {
+            using var conn = DB.Connection();
+            using var cmd = new NpgsqlCommand(
+                "DELETE FROM cardTable WHERE id = @p1",
+                conn);
+            cmd.Parameters.AddWithValue("p1", cardId);
+            cmd.Parameters[0].NpgsqlDbType = NpgsqlDbType.Varchar;
+            cmd.ExecuteNonQuery();
+        }
+        
     }
 }

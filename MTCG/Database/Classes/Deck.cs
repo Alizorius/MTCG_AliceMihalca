@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MTCG
 {
-    class Deck
+    public class Deck
     {
         static Random Rnd = new Random();
         public List<Card> DeckList = new List<Card>();

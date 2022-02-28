@@ -5,10 +5,6 @@ using System.Text;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 
-
-//returns 0 sind nicht sehr ausgabefähig, entweder enum oder variable mit namen returnen um zu wissen worum es da geht
-//C# convention - alle methoden werden mit großen buchstaben angefangen
-
 public enum ElementType
 {
     Fire,
@@ -39,7 +35,6 @@ namespace MTCG
         public string? Username { get; set; }
         public bool InDeck { get; set; }
 
-        //constructor for all member variables?
 
         public Card(string name, double damage, ElementType elementType)
         {
@@ -138,7 +133,7 @@ namespace MTCG
                 {
                     return 0;
                 }
-                //The armor of Knights is so heavy that WaterSpells make them drown them instantly 
+                //The armor of Knights is so heavy that WaterSpells make them drown instantly 
                 if (m.MonsterType.Equals(MonsterType.Knight) && ElementType.Equals(ElementType.Water))
                 {
                     return Double.MaxValue;

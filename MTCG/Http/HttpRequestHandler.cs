@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MTCG.Http
 {
@@ -75,7 +71,7 @@ namespace MTCG.Http
 
         public static string PostSessionsRequest(string request)
         {
-            if (DBUser.LoginUser(Helper.ExtractUser(request).Username))
+            if (DBUser.LoginUser(Helper.ExtractUser(request).Username, Helper.ExtractUser(request).Password))
             {
                 return "You logged in successfully!\n\r";
             }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MTCG
 {
-    class DBTrade
+    public class DBTrade
     {
         public static bool AddTradingDeal(string request)
         {
@@ -16,11 +16,24 @@ namespace MTCG
             List<Card> userCards = DBCard.GetAllUserCards(request);
             Deck userDeck = DBCard.GetDeck(request);
 
+            return AddTradingDeal(deal, userCards, userDeck);
+        }
+
+        public static bool AddTradingDeal(Deal deal, List<Card> userCards, Deck userDeck)
+        {
             if (!userCards.Exists(c => c.Id == deal.CardToTrade))
             {
                 return false;
             }
-            if(userDeck.DeckList.Exists(c => c.Id == deal.CardToTrade))
+            if (userDeck.DeckList.Exists(c => c.Id == deal.CardToTrade))
+            {
+                return false;
+            }
+            if(GetAllDeals().Exists(d => d.Id == deal.Id))
+            {
+                return false;
+            }
+            if (GetAllDeals().Exists(d => d.CardToTrade == deal.CardToTrade))
             {
                 return false;
             }

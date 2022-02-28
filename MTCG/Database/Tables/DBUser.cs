@@ -10,12 +10,16 @@ using System.Threading.Tasks;
 
 namespace MTCG
 {
-    static class DBUser
+    public static class DBUser
     {
 
         public static bool AddUser(string request)
         {
-            User user = Helper.ExtractUser(request);
+            return AddUser(Helper.ExtractUser(request));
+        }
+
+        public static bool AddUser(User user)
+        {
             if (user.Username.Equals("admin"))
             {
                 user.Role = Role.Admin;
@@ -52,10 +56,10 @@ namespace MTCG
             return false;
         }
 
-        public static bool LoginUser(string username)
+        public static bool LoginUser(string username, string password)
         {
             User user = GetUserByUsername(username);
-            if (user != null)
+            if (user != null && user.Password.Equals(password))
             {
                 using var conn = DB.Connection();
 
@@ -65,7 +69,7 @@ namespace MTCG
                 conn);
                 userUpdateCmd.Parameters.AddWithValue("p1", username);
                 userUpdateCmd.Parameters[0].NpgsqlDbType = NpgsqlDbType.Varchar;
-                userUpdateCmd.Parameters.AddWithValue("p2", user.Password);
+                userUpdateCmd.Parameters.AddWithValue("p2", password);
                 userUpdateCmd.Parameters[1].NpgsqlDbType = NpgsqlDbType.Varchar;
                 userUpdateCmd.ExecuteNonQuery();
                 return true;

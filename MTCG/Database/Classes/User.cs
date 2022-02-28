@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace MTCG
 {
-    enum Role
+    public enum Role
     {
         User,
         Admin
     }
-    class User
+    public class User
     {
         public string Username { get; set; }
         public string Password { get; set; }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MTCG
 {
-    class Deal
+    public class Deal
     {
         public string Id { get; set; }
         public string CardToTrade { get; set; }
