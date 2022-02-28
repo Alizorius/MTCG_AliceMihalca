@@ -35,6 +35,11 @@ namespace MTCG
                         if (deck1.GetSize().Equals(1))
                         {
                             battleLog += deck2.Username + " wins this Game!\n\r\n\r";
+                            if(i < 20)
+                            {
+                                battleLog += deck2.Username + " You managed to win this game under 20 rounds, you get 1 coin as a reward!\n\r\n\r";
+                                DBUser.GetUserByUsername(deck2.Username).Coins += 1;
+                            }
                             
                             scoreUser1.Elo -= 5;
                             scoreUser1.Losses += 1;
@@ -59,6 +64,11 @@ namespace MTCG
                         if (deck2.GetSize().Equals(1))
                         {
                             battleLog += deck1.Username + " wins this Game!\n\r\n\r";
+                            if (i < 20)
+                            {
+                                battleLog += deck1.Username + " You managed to win this game under 20 rounds, you get 1 coin as a reward!\n\r\n\r";
+                                DBUser.GetUserByUsername(deck1.Username).Coins += 1;
+                            }
 
                             scoreUser1.Elo += 3;
                             scoreUser1.Wins += 1;
